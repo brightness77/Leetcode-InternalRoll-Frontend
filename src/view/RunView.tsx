@@ -18,15 +18,13 @@ const styles = {
 
 function RunView(): React.ReactElement {
 
-    
-
     return (
         <>
-        <p style = {styles.backgroundColor}>
-            <p style = {styles.juanContainer}>
-                <InternalRoll />
+            <p style = {styles.backgroundColor}>
+                <p style = {styles.juanContainer}>
+                    <InternalRoll />
+                </p>
             </p>
-        </p>
         </>
     )
 }
