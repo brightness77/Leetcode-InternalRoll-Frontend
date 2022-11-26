@@ -53,6 +53,11 @@ const theme = createTheme({
             fontSize: 20,
         },
 
+        body2 : {
+            fontSize: 20,
+            color: 'secondary.dark',
+        },
+
         h3 : {
             fontSize: 30,
         },

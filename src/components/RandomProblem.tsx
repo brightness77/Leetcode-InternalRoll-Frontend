@@ -32,7 +32,7 @@ function RandomProblem(): React.ReactElement {
 
     const [inputDiff, setInputDiff] = useState(0);
 
-    const [problemTitle, setProblemTitle] = useState('Error');
+    const [problemTitle, setProblemTitle] = useState('服务器出问题了呢,快去找 poor shawn 算账');
     const [problemDifficulty, setProblemDifficulty] = useState('');
     const [problemDiffStyle, setProblemDiffStyle] = useState(styles.easyDiff);
     const [problemURL, setProblemURL] = useState('https://www.google.com');
@@ -67,14 +67,14 @@ function RandomProblem(): React.ReactElement {
             }
 
             setProblemURL(`https://www.leetcode.com/problems/${parsedResponse.titleSlug}`);
-            setProblemURLText('Leetcode.com link: ' + parsedResponse.title);
+            setProblemURLText('Link: ' + parsedResponse.title);
 
             let tagStrings = '';
             parsedResponse.topicTags.forEach(function (value : string) {
                 //console.log('Parsed topic tags of ' + value);
                 tagStrings += (value + ', ');
             });
-            setProblemTopicTags(tagStrings);
+            //setProblemTopicTags(tagStrings);
         }
     }, []);
 
@@ -120,7 +120,7 @@ function RandomProblem(): React.ReactElement {
 
                 <Container sx = {{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'center', mt: 2,}}>
                     <FormControl sx={{margin : 1,}}>
-                        <InputLabel id="diff-select-label">Select Difficulty</InputLabel>
+                        <InputLabel id="diff-select-label" sx={{fontSize:16,}}>Select Difficulty</InputLabel>
                         <Select
                             labelId="diff-select-label"
                             id="diff-select-label"
@@ -146,18 +146,26 @@ function RandomProblem(): React.ReactElement {
 
                 {isLoading && <CircularProgress color = "primary" sx={{margin:1}} />}
 
-                <Typography variant="body1" sx={{mt : 1}}>
-                    {problemTitle}
-                </Typography>
-                <Typography variant="body1" sx={problemDiffStyle}>
-                    {problemDifficulty}
-                </Typography>
-                <Link href = {problemURL} target="_blank" variant="body1" sx={{}}>
-                    {problemURLText}
-                </Link>
-                <Typography variant="body1" sx={{}}>
-                    {problemTopicTags}
-                </Typography>
+                {!isLoading && <Container sx = {{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', mt: 2,}}>
+                    <Typography variant="body1" sx={{mt : 1}}>
+                        {problemTitle}
+                    </Typography>
+                    <Typography variant="body1" sx={problemDiffStyle}>
+                        {problemDifficulty}
+                    </Typography>
+
+                    <Button variant="outlined" sx={{mt: 1}}>
+                        <Link href = {problemURL} target="_blank" sx={{}}>
+                            <Typography>
+                                {problemURLText}
+                            </Typography>
+                        </Link>
+                    </Button>
+
+                    <Typography variant="body1" sx={{}}>
+                        {problemTopicTags}
+                    </Typography>
+                </Container>}
             </Box>
         </Container>
     );
