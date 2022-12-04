@@ -1,11 +1,11 @@
 import { useCallback, useState, useEffect } from "react";
 import LeetcodeRequest from "../utils/LeetcodeRequest";
-import {Typography, Container, Stack, Paper, Box, CircularProgress} from "@mui/material";
+import {Typography, Container, Stack, Paper, Box, CircularProgress, LinearProgress} from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 
 const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#ffffff',
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#eeeeee',
     ...theme.typography.body2,
     padding: theme.spacing(1),
     textAlign: 'center',
@@ -14,6 +14,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 
 const styles = {
+
     buttonStyle : {
         color : '#101010',
         'font-size' : 25,
@@ -75,21 +76,21 @@ function Billboard(): React.ReactElement {
 
 
     return (
-        <Box component = "main" sx = {{mt : 5, minheight:600, }}>
+        <Box component = "main" sx = {{mt : 5, minheight:600}}>
 
-            {isLoading && <CircularProgress color = "primary" variant='indeterminate' sx={{margin:1}} />}
+            {isLoading && <LinearProgress color = "primary" variant='indeterminate' sx={{margin:1, width:'90%'}} />}
 
             {(!isLoading && !loadStatus) && <Typography variant="body1">
-                服务器出问题了呢, 但我也没有办法
+                服务器出问题了呢, 但 poor shawn 也没有办法
             </Typography>}
 
             {loadStatus && <Container>
                 <Typography variant="body1">
                     现在是力扣时间 {date}
                 </Typography>
-                <Stack spacing= {2}>
+                <Stack spacing={2}>
                     <Item>
-                        <Typography variant="body1" sx = {{fontSize : 30}}>
+                        <Typography variant="body1" sx = {{fontSize : 30,}}>
                             1ST!!! : {firstEntry[0]} 同学, 今天已经提交了 {firstEntry[1]} 道题啦!
                         </Typography>
                     </Item>

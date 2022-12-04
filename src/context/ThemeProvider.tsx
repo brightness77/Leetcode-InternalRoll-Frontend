@@ -41,28 +41,45 @@ const theme = createTheme({
         },
     },
 
+
     typography : {
-        fontFamily : '-apple-system',
+
+        fontFamily : 'Anonymous Pro',
+
+        button : {
+            fontFamily : 'Anonymous Pro',
+            textTransform: 'none',
+        },
 
         largeMessage : {
+            fontFamily : 'Anonymous Pro',
             fontSize: 30,
-            
         },
 
         body1 : {
+            fontFamily : 'Anonymous Pro',
             fontSize: 20,
         },
 
         body2 : {
+            fontFamily : 'Anonymous Pro',
             fontSize: 20,
             color: 'secondary.dark',
         },
 
+        h2 : {
+            fontFamily : 'Anonymous Pro',
+            fontSize: 60,
+            color: 'secondary',
+        },
+
         h3 : {
+            fontFamily : 'Anonymous Pro',
             fontSize: 30,
         },
 
         topbarButtom : {
+            fontFamily : 'Anonymous Pro',
             fontSize: 20,
             color: 'secondary.dark',
         },

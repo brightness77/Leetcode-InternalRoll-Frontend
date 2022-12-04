@@ -1,37 +1,38 @@
-import TopBar from "./TopBar";
+import TopBar from "../TopBar";
 import {Container, Box, Typography} from "@mui/material"
-import confused from "../static/img/DuckConfused.png"
+import tiger from "../../static/img/tiger_refuse.jpg"
+import { globalStyles } from "../../context/ConfigProvider";
 
 
 const styles = {
     notFound: {
-        mt: 5,
-        mb: 1,
+        mt: '2pt',
+        mb: '2pt',
     },
 
     notFoundImg: {
-        mb: 10,
-        width: 300,
+        mt: '20pt',
+        mb: '20pt',
+        width: 360,
         height: 360,
     },
 };
 
 
-function NotFoundView(): React.ReactElement {
+function ForbiddenView(): React.ReactElement {
 
     return (
         <>
             <TopBar />
-            <Container sx = {{ mt:10 }}>
+            <Container sx = {globalStyles.viewWholeContainerStyle}>
                 <Box sx = {{
-                    marginTop: 10,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}>
-                    <img src = {confused} alt = "404" style = {styles.notFoundImg} />
+                    <Box component="img" src={tiger} alt = "403" sx={styles.notFoundImg}/>
                     <Typography variant = "largeMessage" sx = {styles.notFound}>
-                        这个网页为啥找不到了呢?
+                        403 FORBIDDEN
                     </Typography>
                 </Box>
             </Container>
@@ -39,4 +40,4 @@ function NotFoundView(): React.ReactElement {
     );
 }
 
-export default NotFoundView;
+export default ForbiddenView;

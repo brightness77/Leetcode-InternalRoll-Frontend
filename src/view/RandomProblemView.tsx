@@ -1,5 +1,6 @@
 import { Container } from "@mui/material";
-import RandomProblem from "../components/RandomProblem";
+import RandomProblem from "../components/ProblemSelect/RandomProblem";
+import { globalStyles } from "../context/ConfigProvider";
 import TopBar from "./TopBar";
 
 
@@ -11,7 +12,7 @@ function RandomProblemView(): React.ReactElement {
     return (
         <>
             <TopBar />
-            <Container sx = {{pt: '5%'}}>
+            <Container fixed maxWidth={false} sx = {globalStyles.viewWholeContainerStyle}>
                 <RandomProblem />
             </Container>
         </>

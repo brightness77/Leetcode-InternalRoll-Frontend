@@ -65,12 +65,21 @@ function CheckUser(): React.ReactElement {
     return (
         <Container component = "main" sx = {{display:'flex', flexDirection:'column', alignItems:'center'}}>
             <Box component="form" sx = {{width: 800, display:'flex', flexDirection:'column', alignItems:'center'}}>
-                <img src = {juan} alt = "ROLL!" />
+                
+                <Box component="img" sx={{}} src={juan} alt="ROLL!" />
+
                 <Typography variant="body1">
                     本网站对以下内容概不负责
                 </Typography>
-                <TextField margin="normal" required id="account" label="Account Name" 
-                    autoComplete="leap-code" onChange={onUsernameChange} autoFocus sx = {{width: 400}}/>
+                <TextField
+                    margin="normal"
+                    required
+                    id="account"
+                    label="Account Name" 
+                    autoComplete="leap-code"
+                    onChange={onUsernameChange}
+                    sx = {{width: 400}}
+                />
                 <Button variant = "contained" color = "primary" onClick = {onJuan} sx = {{width: 400, mt: 2}}>
                     卷起来
                 </Button>

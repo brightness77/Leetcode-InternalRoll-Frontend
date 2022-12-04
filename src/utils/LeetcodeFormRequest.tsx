@@ -1,14 +1,14 @@
 
 type Method = 'GET' | 'POST';
 
-class LeetcodeRequest {
+class LeetcodeFormRequest {
     base: string = '/api';
     path: string;
     request: XMLHttpRequest;
     payload: any | undefined;
     method: string;
 
-    //encapsulated
+    //encapsulated handler
     handleSuccess: (response: any) => void = () => {};
     handleFailure: (response: any, status: number) => void = () => {};
     handleError: (err: any) => void = () => {};
@@ -19,13 +19,12 @@ class LeetcodeRequest {
         this.method = method;
     }
 
-
-    setPayload(payload: any): LeetcodeRequest{
+    setPayload(payload: any): LeetcodeFormRequest{
         this.payload = JSON.stringify(payload);
         return this;
     }
 
-    onStart(handleStart: () => void): LeetcodeRequest {
+    onStart(handleStart: () => void): LeetcodeFormRequest {
         this.request.addEventListener('loadstart', handleStart);
         return this;
     }
@@ -49,17 +48,17 @@ class LeetcodeRequest {
         }
     }
 
-    onSuccess(handleSuccess: (response: any) => void): LeetcodeRequest {
+    onSuccess(handleSuccess: (response: any) => void): LeetcodeFormRequest {
         this.handleSuccess = handleSuccess;
         return this;
     }
 
-    onFailure(handleFailure: (response: any, status: number) => void): LeetcodeRequest {
+    onFailure(handleFailure: (response: any, status: number) => void): LeetcodeFormRequest {
         this.handleFailure = handleFailure;
         return this;
     }
 
-    onError(handleError: (err: any) => void): LeetcodeRequest {
+    onError(handleError: (err: any) => void): LeetcodeFormRequest {
         this.handleError = handleError;
         this.request.addEventListener('error', handleError);
         return this;
@@ -68,7 +67,7 @@ class LeetcodeRequest {
 
     send(){
         this.request.open(this.method, `${this.base}/${this.path}`);
-        this.request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        this.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         this.request.withCredentials = true;
         this.request.addEventListener('loadend', this.onFinished());
         this.request.send(this.payload);
@@ -77,4 +76,4 @@ class LeetcodeRequest {
     }
 }
 
-export default LeetcodeRequest;
+export default LeetcodeFormRequest;
