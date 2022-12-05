@@ -1,7 +1,8 @@
 import { useCallback, useState, useEffect } from "react";
 import LeetcodeRequest from "../utils/LeetcodeRequest";
-import {Typography, Container, Stack, Paper, Box, CircularProgress, LinearProgress} from "@mui/material";
+import {Typography, Container, Stack, Paper, Box, CircularProgress, LinearProgress, List, ListItem, Skeleton, Divider} from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { globalMessages } from "../context/ConfigProvider";
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -24,7 +25,45 @@ const styles = {
     inputBoxStyle : {
         'font-size' : 25,
         'size' : 30,
-    }
+    },
+
+    wholeContainerStyle : {
+        display:'flex',
+        flexDirection:'column',
+        justifyContent:'center',
+        alignItems:'center',
+        mt: '1%',
+    },
+
+    wholePaperStyle : {
+        m:'10px',
+        width : '75%',
+        minWidth : '800px',
+        minHeight : '200px',
+    },
+
+    listStyle : {
+        alignItems:'center',
+    },
+
+    listItemLeftStyle : {
+        mr:'50px',
+        flexGrow : 0,
+    },
+
+    listItemRightStyle : {
+        flexGrow : 1,
+        m : '1pt',
+    },
+
+    listItemStyle : {
+        display:'flex',
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
+        minHeight:'50px',
+    },
+
 }
 
 
@@ -38,11 +77,13 @@ function Billboard(): React.ReactElement {
     const [thirdEntry, setThirdEntry] = useState(["无名大佬", 10000]);
 
     const [isLoading, setIsLoading] = useState(false);
-    const [loadStatus, setLoadStatus] = useState(false);
+    const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
 
     const onRequestSuccess = useCallback((response : any) => {
-        //console.log(response);
+        setIsLoading(false);
+        setStatusMessage(null);
+        
         const parsedResponse = JSON.parse(response);
 
         setDate(parsedResponse.leetcodeDate);
@@ -51,23 +92,22 @@ function Billboard(): React.ReactElement {
         setSecondEntry([parsedResponse.billEntryList[1].accountName, parsedResponse.billEntryList[1].count]);
         setThirdEntry([parsedResponse.billEntryList[2].accountName, parsedResponse.billEntryList[2].count]);
 
-        setIsLoading(false);
-        setLoadStatus(true);
+    }, [firstEntry, secondEntry, thirdEntry, date, statusMessage]);
 
-    }, [firstEntry, secondEntry, thirdEntry, date]);
-
-    
     const onRequestFail = useCallback(() => {
         setIsLoading(false);
-        setLoadStatus(false);
+        setStatusMessage(globalMessages.serverErrorMessage);
     }, []);
 
+    const onRequestStart = useCallback(() => {
+        setIsLoading(true);
+        setStatusMessage(null);
+    }, []);
 
     useEffect(() => {
-        setIsLoading(true);
-        setLoadStatus(false);
 
         new LeetcodeRequest('billboard/top3', 'GET')
+            .onStart(onRequestStart)
             .onSuccess(onRequestSuccess)
             .onFailure(onRequestFail)
             .onError(onRequestFail)
@@ -76,37 +116,74 @@ function Billboard(): React.ReactElement {
 
 
     return (
-        <Box component = "main" sx = {{mt : 5, minheight:600}}>
+        <Container component = "main" sx = {styles.wholeContainerStyle}>
 
-            {isLoading && <LinearProgress color = "primary" variant='indeterminate' sx={{margin:1, width:'90%'}} />}
+            <Paper variant="outlined" sx= {styles.wholePaperStyle}>
 
-            {(!isLoading && !loadStatus) && <Typography variant="body1">
-                服务器出问题了呢, 但 poor shawn 也没有办法
-            </Typography>}
+                <List sx={styles.listStyle}>
+                    <ListItem sx={styles.listItemStyle}>
+                        <Typography variant='h4' sx={{fontWeight:'bold'}}>今日内卷排行榜</Typography>
+                    </ListItem>
 
-            {loadStatus && <Container>
-                <Typography variant="body1">
-                    现在是力扣时间 {date}
-                </Typography>
-                <Stack spacing={2}>
-                    <Item>
-                        <Typography variant="body1" sx = {{fontSize : 30,}}>
-                            1ST!!! : {firstEntry[0]} 同学, 今天已经提交了 {firstEntry[1]} 道题啦!
-                        </Typography>
-                    </Item>
-                    <Item>
-                        <Typography variant="body1" sx = {{fontSize : 25}}>
-                            2ND!! : {secondEntry[0]} 同学, 今天已经提交了 {secondEntry[1]} 道题啦!
-                        </Typography>
-                    </Item>
-                    <Item>
-                        <Typography variant="body1" sx = {{fontSize : 20}}>
-                            3RD! : {thirdEntry[0]} 同学, 今天已经提交了 {thirdEntry[1]} 道题啦!
-                        </Typography>
-                    </Item>
-                </Stack>
-            </Container>}
-        </Box>
+                    {isLoading && <div style={{width:'100%',}}>
+                        <ListItem sx={styles.listItemStyle}>
+                            <Skeleton animation="wave" sx={{width:'70%', height:'60px'}} />
+                        </ListItem>
+
+                        <ListItem sx={styles.listItemStyle}>
+                            <Skeleton animation="wave" sx={{width:'70%', height:'40px'}} />
+                        </ListItem>
+
+                        <ListItem sx={styles.listItemStyle}>
+                            <Skeleton animation="wave" sx={{width:'70%', height:'40px'}} />
+                        </ListItem>
+
+                        <ListItem sx={styles.listItemStyle}>
+                            <Skeleton animation="wave" sx={{width:'70%', height:'40px'}} />
+                        </ListItem>
+                    </div>}
+
+                    {statusMessage != null && <Typography variant="body1">
+                        {statusMessage}
+                    </Typography>}
+
+                    {!isLoading && statusMessage == null && <div>
+
+                        <Divider variant='middle' />
+
+                        <ListItem sx={styles.listItemStyle}>
+                            <Typography variant="body1"> 现在是力扣时间 {date} </Typography>
+                        </ListItem>
+
+                        <Divider variant='middle' />
+
+                        <ListItem sx={styles.listItemStyle}>
+                            <Typography variant="body1" sx = {{fontSize : 25,}}>
+                                1ST!!! : {firstEntry[0]} 同学, 今天已经提交了 {firstEntry[1]} 道题啦!
+                            </Typography>
+                        </ListItem>
+
+                        <Divider variant='middle' />
+
+                        <ListItem sx={styles.listItemStyle}>
+                            <Typography variant="body1" sx = {{fontSize : 22}}>
+                                2ND!! : {secondEntry[0]} 同学, 今天已经提交了 {secondEntry[1]} 道题啦!
+                            </Typography>
+                        </ListItem>
+
+                        <Divider variant='middle' />
+
+                        <ListItem sx={styles.listItemStyle}>
+                            <Typography variant="body1" sx = {{fontSize : 20}}>
+                                3RD! : {thirdEntry[0]} 同学, 今天已经提交了 {thirdEntry[1]} 道题啦!
+                            </Typography>
+                        </ListItem>
+
+                    </div>}
+
+                </List>
+            </Paper>
+        </Container>
     );
 }
 

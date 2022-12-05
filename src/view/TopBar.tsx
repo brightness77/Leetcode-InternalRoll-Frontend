@@ -1,10 +1,11 @@
-import {AppBar, Toolbar, Menu, Typography, Button} from "@mui/material";
+import {AppBar, Toolbar, Menu, Typography, Button, MenuItem, Divider} from "@mui/material";
 import iconImg from "../static/img/icon_long.png";
-import { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { globalDimensions } from "../context/ConfigProvider";
 import RunContext from "../context/RunContextProvider";
 import LeetcodeRequest from "../utils/LeetcodeRequest";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 
 const styles = {
@@ -44,12 +45,21 @@ function TopBar(): React.ReactElement {
 
     const {username, role, setUsername, setRole} = useContext(RunContext);
 
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+
+
+
     const onCheckButtonClick = useCallback(() => {
         navigate('/check');
     }, [navigate]);
 
     const onRandomClick = useCallback(() => {
         navigate('/random-problem');
+    }, [navigate]);
+
+    const onChooseClick = useCallback(() => {
+        navigate('/choose-problem');
     }, [navigate]);
 
     const onLogoClick = useCallback(() => {
@@ -64,9 +74,23 @@ function TopBar(): React.ReactElement {
         navigate('/signup');
     }, [navigate]);
 
-    const onNameTextClick = useCallback(() => {
-        //WIP
-    }, [navigate, username]);
+    const onNameTextClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(e.currentTarget);
+    }, [username, anchorEl]);
+
+    const onNameMenuClose = useCallback(() => {
+        setAnchorEl(null);
+    }, [anchorEl]);
+
+    const onMyProfileClick = useCallback(() => {
+        
+        onNameMenuClose();
+    }, [anchorEl]);
+
+    const onMyRecordClick = useCallback(() => {
+        navigate('/my/record');
+        onNameMenuClose();
+    }, [anchorEl]);
 
     const onAdminClick = useCallback(() => {
         if(role !== 'Admin'){
@@ -96,9 +120,15 @@ function TopBar(): React.ReactElement {
 
                 <img src = {iconImg} alt = "Juan" style = {styles.iconImage} onClick = {onLogoClick}/>
 
+                <Button variant = "outlined" color = "primary" onClick = {onChooseClick} sx = {styles.optionButton}>
+                    <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>
+                        做题
+                    </Typography>
+                </Button>
+
                 <Button variant = "outlined" color = "primary" onClick = {onRandomClick} sx = {styles.optionButton}>
                     <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>
-                        题否
+                        抽题
                     </Typography>
                 </Button>
 
@@ -120,21 +150,31 @@ function TopBar(): React.ReactElement {
 
                 <Typography variant = "h5" component = "div" sx = {styles.middleEmpty} />
 
-                {Boolean(username) && (
-                    <>
+                {Boolean(username) && ( <div>
                     <Button variant = "text" color = "secondary" onClick = {onNameTextClick} sx = {styles.optionButton}>
+                        <AccountCircleIcon fontSize="large" sx={{mr:'10px'}} />
                         <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>
                             {usernameText}
                         </Typography>
                     </Button>
+                    <Menu anchorEl={anchorEl} open={open} onClose={onNameMenuClose} MenuListProps={{'aria-labelledby': 'basic-button',}}>
 
-                    <Button variant = "text" color = "secondary" onClick = {onLogOutClick} sx = {styles.optionButton}>
-                        <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>
-                            登出
-                        </Typography>
-                    </Button>
-                    </>
-                )}
+                        <MenuItem onClick={onMyProfileClick}>
+                            <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>Profile</Typography>
+                        </MenuItem>
+
+                        <MenuItem onClick={onMyRecordClick}>
+                            <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>刷题记录</Typography>
+                        </MenuItem>
+
+                        <Divider />
+
+                        <MenuItem onClick={onLogOutClick}>
+                            <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>登出</Typography>
+                        </MenuItem>
+
+                    </Menu>
+                </div> )}
 
                 {!Boolean(username) && (
                     <>

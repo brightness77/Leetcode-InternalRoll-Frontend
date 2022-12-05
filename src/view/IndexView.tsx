@@ -31,18 +31,11 @@ function IndexView(): React.ReactElement {
             <TopBar />
             
             <Container maxWidth = {false} disableGutters = {true} sx = {globalStyles.viewWholeContainerStyle}>
-                <Container maxWidth = {false} disableGutters = {true} sx = {{pt: '0%'}}>
+                <Container maxWidth = {false} disableGutters = {true}>
                     <Box component="img" src = {familyImg} alt = "伐木累" style = {styles.familyImg} />
                 </Container>
 
-                <Container maxWidth="lg" sx = {{pt: '1%'}}>
-                    <Typography variant = 'h3'>
-                        这肯定不是一个刷题网站
-                    </Typography>
-                    <Typography variant = 'body1'>
-                        开开心心刷题去,大把大把头发掉!
-                    </Typography>
-
+                <Container maxWidth={false}>
                     <Billboard />
                 </Container>
 

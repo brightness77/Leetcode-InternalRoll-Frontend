@@ -1,7 +1,7 @@
 import { Container } from "@mui/system";
-import LogInForm from "../components/LogInForm";
-import { globalStyles } from "../context/ConfigProvider";
-import TopBar from "./TopBar";
+import LogInForm from "../../components/LogInForm";
+import { globalStyles } from "../../context/ConfigProvider";
+import TopBar from "../TopBar";
 
 
 
