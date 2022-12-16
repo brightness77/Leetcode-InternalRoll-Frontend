@@ -1,19 +1,17 @@
-import { Alert, Box, Button, CircularProgress, Container, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Checkbox, CircularProgress, Container, FormControlLabel, Paper, TextField, Typography } from "@mui/material";
 import { useCallback, useContext, useState } from "react";
+import { globalStyles } from "../context/ConfigProvider";
+import useAuthenticationForm from "../hook/useAuthenticationForm";
 import loginImg from "../static/img/four_1.jpeg"
 import LeetcodeFormRequest from "../utils/LeetcodeFormRequest";
 import LeetcodeRequest from "../utils/LeetcodeRequest";
-import { Role } from "../context/RunContextProvider";
-import RunContext from "../context/RunContextProvider";
-import { useNavigate } from "react-router-dom";
-import { globalMessages } from "../context/ConfigProvider";
+
 
 
 const styles = {
 
     loginImgStyle : {
-        height : 220,
-        width : 400,
+        width : '100%',
     },
 
     textFieldStyle : {
@@ -27,14 +25,9 @@ function LogInForm() : React.ReactElement {
     //input fields
     const [usernameInput, setUsernameInput] = useState("");
     const [passwordInput, setPasswordInput] = useState("");
+    const [rememberMeInput, setRememberMeInput] = useState(false);
 
-    //variables
-    const [isLoading, setIsLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const {setUsername, setRole} = useContext(RunContext);
-
-
-    //input changes
+    //input field handlers
     const onUsernameInputChange = useCallback((e : any) => {
         setUsernameInput(e.target.value);
     }, []);
@@ -43,148 +36,124 @@ function LogInForm() : React.ReactElement {
         setPasswordInput(e.target.value);
     }, []);
 
-
-    //context
-    const navigate = useNavigate();
-
-    //handlers
-    const onRequestStart = useCallback(() => {
-        setIsLoading(true);
-    }, []);
-
-    const onErrorMsgClose = useCallback(() => {
-        setErrorMessage(null);
-    }, []);
-
-    const onRequestFailure = useCallback((response : any) => {
-        setErrorMessage("用户名或密码不太对哦!");
-        setIsLoading(false);
-    }, []);
-
-    const onRequestError = useCallback(() => {
-        setErrorMessage(globalMessages.serverErrorMessage);
-        setIsLoading(false);
+    const onRememberMeInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setRememberMeInput(event.target.checked);
     }, []);
 
 
-    const onRequestSuccess = useCallback((response : any) => {
-        console.log("Log in success!");
-        setIsLoading(false);
-
-        const parsedResponse = JSON.parse(response);
-
-        //check username
-        const username = parsedResponse.username;
-
-        //check role
-        const role = parsedResponse.admin != null ? 'Admin' : null;
-
-        console.log(role);
-
-        if(parsedResponse.username == null){
-            setErrorMessage(globalMessages.serverErrorMessage);
-            return;
-        }
+    //importing hooks
+    const {
+        isLogInLoading,
+        logInErrorMessage,
+        onLogInRequestStart,
+        onLogInErrorMsgClose,
+        onLogInRequestFailure,
+        onLogInRequestError,
+        onLogInRequestSuccess,
+    } = useAuthenticationForm(() => {
+        return {
+            username : usernameInput,
+        };
+    });
 
 
-        setUsername(username);
-        setRole(role);
-        localStorage.setItem('username', username);
-        if(role !== null){
-            localStorage.setItem('role', role);
-        }
-
-        //after successfully logged in, navigate to home page
-        navigate('/');
-    }, [navigate]);
 
     
     //check role
     const onLoginSuccess = useCallback(() => {
+
         new LeetcodeRequest(`users/currentUser`, 'GET')
-            .onStart(onRequestStart)
-            .onSuccess(onRequestSuccess)
-            .onFailure(onRequestFailure)
-            .onError(onRequestError)
+            .onStart(onLogInRequestStart)
+            .onSuccess(onLogInRequestSuccess)
+            .onFailure(onLogInRequestFailure)
+            .onError(onLogInRequestError)
             .send();
-    }, [onRequestFailure, onRequestError, onRequestFailure, usernameInput]);
+
+    }, [onLogInRequestFailure, onLogInRequestError, onLogInRequestSuccess, usernameInput]);
 
 
     //submit login info
     const onSubmit = useCallback((e : any) => {
         new LeetcodeFormRequest(`login?username=${usernameInput}&password=${passwordInput}`, "POST")
-            .onStart(onRequestStart)
+            .onStart(onLogInRequestStart)
             .onSuccess(onLoginSuccess)
-            .onFailure(onRequestFailure)
-            .onError(onRequestError)
+            .onFailure(onLogInRequestFailure)
+            .onError(onLogInRequestError)
             .send();
         e.preventDefault();
-    }, [onRequestFailure, onRequestError, onRequestStart, usernameInput, passwordInput]);
+    }, [onLogInRequestFailure, onLogInRequestError, onLogInRequestSuccess, usernameInput, passwordInput]);
 
 
 
     return(
-        <Container component="main" maxWidth = "xs">
-            <img src={loginImg} alt="Welcome" style={styles.loginImgStyle} />
+        <Container component="main" maxWidth = "xs" sx={globalStyles.component.mainContainer.parentWithGap}>
+            <Paper variant="outlined" sx={globalStyles.component.mainPaper.withoutMargin}>
+                <Box component='img' src={loginImg} alt="Welcome" style={styles.loginImgStyle} />
 
-            <Box sx={{
-                mt: 2,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-            }}>
-                <Typography variant="h3" color="primary">
-                    欢迎回到内卷中心!
-                </Typography>
+                <Box sx={{
+                    mt: '5px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    p:'20px',
+                }}>
+                    <Typography variant="h4">
+                        欢迎回到内卷中心!
+                    </Typography>
 
-                {isLoading && <CircularProgress color = "primary" variant='indeterminate' sx={{margin:1, }} />}
-                {errorMessage != null && (
-                    <Alert onClose={onErrorMsgClose} severity="error" sx = {{mt: 2}}>
-                        {errorMessage}
-                    </Alert>
-                )}
+                    {isLogInLoading && <CircularProgress color = "primary" variant='indeterminate' sx={{margin:1, }} />}
+                    {logInErrorMessage != null && (
+                        <Alert onClose={onLogInErrorMsgClose} severity="error" sx = {{mt: 2}}>
+                            {logInErrorMessage}
+                        </Alert>
+                    )}
 
-                <Box component="form" onSubmit={onSubmit}>
+                    <Box component="form" onSubmit={onSubmit}>
 
-                    <TextField
-                        margin="normal"
-                        fullWidth
-                        required
-                        id="username"
-                        label="Username"
-                        name="username"
-                        type="text"
-                        onChange = {onUsernameInputChange}
-                        variant="outlined"
-                        sx = {styles.textFieldStyle}
-                    />
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            required
+                            id="username"
+                            label="Username"
+                            name="username"
+                            type="text"
+                            onChange = {onUsernameInputChange}
+                            variant="outlined"
+                            sx = {styles.textFieldStyle}
+                        />
 
-                    <TextField
-                        margin="normal"
-                        fullWidth
-                        required
-                        id="password"
-                        label="Password"
-                        name="password"
-                        type="password"
-                        onChange = {onPasswordInputChange}
-                        variant="outlined"
-                        sx = {styles.textFieldStyle}
-                    />
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            required
+                            id="password"
+                            label="Password"
+                            name="password"
+                            type="password"
+                            onChange = {onPasswordInputChange}
+                            variant="outlined"
+                            sx = {styles.textFieldStyle}
+                        />
 
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{mt: 2}}
-                    >
-                        <Typography variant="body1">
-                            立即加入
-                        </Typography>
-                    </Button>
+                        <FormControlLabel control={
+                            <Checkbox checked={rememberMeInput} onChange={onRememberMeInputChange}></Checkbox>
+                        } label="Remember Me (目前还没有啥用)" />
+
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{mt: 2}}
+                        >
+                            <Typography variant="body1">
+                                回家刷题啦
+                            </Typography>
+                        </Button>
+                    </Box>
+
                 </Box>
-
-            </Box>
+            </Paper>
         </Container>
     );
 

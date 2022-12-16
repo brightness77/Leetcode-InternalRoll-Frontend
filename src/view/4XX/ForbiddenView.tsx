@@ -1,7 +1,8 @@
-import TopBar from "../TopBar";
+import TopBar from "../../components/Bar/TopBar";
 import {Container, Box, Typography} from "@mui/material"
 import tiger from "../../static/img/tiger_refuse.jpg"
 import { globalStyles } from "../../context/ConfigProvider";
+import FooterComponent from "../../components/Bar/FooterComponent";
 
 
 const styles = {
@@ -22,8 +23,9 @@ const styles = {
 function ForbiddenView(): React.ReactElement {
 
     return (
-        <>
+        <Container maxWidth = {false} disableGutters = {true} sx = {globalStyles.viewContainerStyle}>
             <TopBar />
+
             <Container sx = {globalStyles.viewWholeContainerStyle}>
                 <Box sx = {{
                     display: 'flex',
@@ -36,7 +38,9 @@ function ForbiddenView(): React.ReactElement {
                     </Typography>
                 </Box>
             </Container>
-        </>
+
+            <FooterComponent />
+        </Container>
     );
 }
 

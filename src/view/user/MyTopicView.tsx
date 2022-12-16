@@ -1,26 +1,26 @@
-import { Container } from "@mui/material";
-import RandomProblem from "../../components/ProblemSelect/RandomProblem";
+import { Container } from "@mui/system";
+import PlaceholderComponent from "../../components/PlaceholderComponent";
+import MyTopicHome from "../../components/User/MyTopicHome";
 import { globalStyles } from "../../context/ConfigProvider";
 import TopBar from "../../components/Bar/TopBar";
 import FooterComponent from "../../components/Bar/FooterComponent";
 
 
 
-
-function RandomProblemView(): React.ReactElement {
-
+function MyTopicView() : React.ReactElement {
+    
 
     return (
         <Container maxWidth = {false} disableGutters = {true} sx = {globalStyles.viewContainerStyle}>
             <TopBar />
 
-            <Container fixed maxWidth={false} sx = {globalStyles.viewWholeContainerStyle}>
-                <RandomProblem />
+            <Container sx = {globalStyles.viewWholeContainerStyle}>
+                <MyTopicHome />
             </Container>
 
             <FooterComponent />
         </Container>
-    )
+    );
 };
 
-export default RandomProblemView;
+export default MyTopicView;

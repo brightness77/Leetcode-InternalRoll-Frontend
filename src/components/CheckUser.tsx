@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import LeetcodeRequest from "../utils/LeetcodeRequest";
-import juan from "../static/img/juan_dark.png";
+import juan from "../static/img/three_1.jpg";
 import {Typography, Container, Box, Button, TextField} from "@mui/material";
 
 
@@ -14,6 +14,12 @@ const styles = {
     inputBoxStyle : {
         'font-size' : 25,
         'size' : 30,
+    }, 
+
+    imageStyle : {
+        width: '500px',
+        height : '500px',
+        mb:'20px',
     }
 }
 
@@ -66,14 +72,14 @@ function CheckUser(): React.ReactElement {
         <Container component = "main" sx = {{display:'flex', flexDirection:'column', alignItems:'center'}}>
             <Box component="form" sx = {{width: 800, display:'flex', flexDirection:'column', alignItems:'center'}}>
                 
-                <Box component="img" sx={{}} src={juan} alt="ROLL!" />
+                <Box component="img" sx={styles.imageStyle} src={juan} alt="ROLL!" />
 
-                <Typography variant="body1">
-                    本网站对以下内容概不负责
-                </Typography>
+                <Typography variant="body1">查查憨憨们都刷了多少题</Typography>
+
                 <TextField
                     margin="normal"
                     required
+                    
                     id="account"
                     label="Account Name" 
                     autoComplete="leap-code"

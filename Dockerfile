@@ -25,3 +25,6 @@ COPY --from=build /app/build ./
 # Copy nginx configuration
 COPY production/nginx.default.conf /etc/nginx/conf.d/default.conf
 
+RUN mkdir -p  /usr/local/nginx/cert
+COPY production/certificate_combined.crt /usr/local/nginx/cert/certificate_combined.crt
+COPY production/private.key /usr/local/nginx/cert/private.key

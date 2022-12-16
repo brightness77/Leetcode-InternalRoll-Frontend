@@ -1,10 +1,11 @@
 import InternalRoll from "../components/CheckUser";
-import TopBar from "./TopBar";
+import TopBar from "../components/Bar/TopBar";
 import {Container, Typography, Box} from "@mui/material";
 import Billboard from "../components/Billboard";
 import familyImg from "../static/img/family_1.png";
 import familyEndImg from "../static/img/family_end.png";
 import { globalStyles } from "../context/ConfigProvider"
+import FooterComponent from "../components/Bar/FooterComponent";
 
 
 const styles = {
@@ -27,7 +28,7 @@ const styles = {
 function IndexView(): React.ReactElement {
 
     return (
-        <>
+        <Container maxWidth = {false} disableGutters = {true} sx = {globalStyles.viewContainerStyle}>
             <TopBar />
             
             <Container maxWidth = {false} disableGutters = {true} sx = {globalStyles.viewWholeContainerStyle}>
@@ -42,8 +43,11 @@ function IndexView(): React.ReactElement {
                 <Container maxWidth = {false} disableGutters = {true} sx = {{pt: '5%'}}>
                     <Box component="img" src = {familyEndImg} alt = "伐木累" style = {styles.familyEndImg} />
                 </Container>
+
             </Container>
-        </>
+
+            <FooterComponent />
+        </Container>
     )
 }
 

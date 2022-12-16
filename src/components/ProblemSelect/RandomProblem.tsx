@@ -2,11 +2,12 @@ import { Theme } from "@emotion/react";
 import { Button, Checkbox, Chip, CircularProgress, Divider, FormControl, FormControlLabel, InputLabel, LinearProgress, Link, List, ListItem, ListItemText, MenuItem, OutlinedInput, Paper, Radio, RadioGroup, Select, SelectChangeEvent, Skeleton, Stack, TextField, Typography, useTheme } from "@mui/material";
 import { Box, Container } from "@mui/system";
 import { useCallback, useState } from "react";
-import { globalMessages } from "../../context/ConfigProvider";
-import twoImg from "../../static/img/two_1.jpeg";
+import { globalMessages, texts_en } from "../../context/ConfigProvider";
+import twoImg from "../../static/img/jieni_1.png";
 import LeetcodeRequest from "../../utils/LeetcodeRequest";
 import { topicTags } from "../../context/TopicTags";
 import { useNavigate } from "react-router-dom";
+import FormHelperText from "@mui/material/FormHelperText";
 
 
 const styles = {
@@ -15,12 +16,12 @@ const styles = {
         display:'flex',
         flexDirection:'row',
         justifyContent:'center',
-        mt: '5%',
+        mt: '2%',
     },
 
     imgStyle : {
-        width : '300px',
-        height : '180px',
+        width : '400px',
+        height : '330px',
     },
 
     easyDiff : {
@@ -112,8 +113,8 @@ function RandomProblem(): React.ReactElement {
     const [problemDiffStyle, setProblemDiffStyle] = useState(styles.easyDiff);
     const [problemNagivation, setProblemNagivation] = useState('/random-problem');
 
-    //display statusMessage
-    const [statusMessage, setStatusMessage] = useState('题否');
+    //display status message
+    const [statusMessage, setStatusMessage] = useState('');
 
     //status states
     const [isLoading, setIsLoading] = useState(false);
@@ -129,7 +130,7 @@ function RandomProblem(): React.ReactElement {
 
 
     const onRequestSuccess = useCallback((response : any) => {
-        console.log("Succeed!");
+        //console.log("Succeed!");
 
         const parsedResponse = JSON.parse(response);
         setIsLoading(false);
@@ -282,13 +283,13 @@ function RandomProblem(): React.ReactElement {
                 <List sx={{ alignItems:'center', }}>
 
                     <ListItem sx = {styles.questionRowListStyle}>
-                        <Typography variant="h3" sx={styles.formTitleStyle}>抽抽看吧!</Typography>
+                        <Typography variant="h4" sx={styles.formTitleStyle}>Random Problem</Typography>
                     </ListItem>
 
                     <Divider variant="middle" />
                     
                     <ListItem sx = {styles.questionRowListStyle}>
-                        <Typography variant="body1" sx={styles.questionTitleStyle}>题目类型</Typography>
+                        <Typography variant="body1" sx={styles.questionTitleStyle}>Problem Type</Typography>
 
                         <RadioGroup
                             row
@@ -298,15 +299,15 @@ function RandomProblem(): React.ReactElement {
                             onChange={onNewOldChange}
                             sx={styles.selectionStyle}
                         >
-                            <FormControlLabel value='new' control={<Radio />} label="新题"  sx={styles.radioStyle} />
-                            <FormControlLabel value='old' control={<Radio />} label="老题" sx={styles.radioStyle} />
+                            <FormControlLabel value='new' control={<Radio />} label="New Problem" sx={styles.radioStyle} />
+                            <FormControlLabel value='old' control={<Radio />} label="Old Problem" sx={styles.radioStyle} />
                         </RadioGroup>
                     </ListItem>
 
                     <Divider variant="middle" />
 
                     <ListItem sx = {styles.questionRowListStyle}>
-                        <Typography variant="body1" sx={styles.questionTitleStyle}>题目难度</Typography>
+                        <Typography variant="body1" sx={styles.questionTitleStyle}>Difficulty</Typography>
 
                         <RadioGroup
                             row
@@ -326,7 +327,7 @@ function RandomProblem(): React.ReactElement {
                     <Divider variant="middle" />
 
                     <ListItem sx = {styles.questionRowListStyle}>
-                        <Typography variant="body1" sx={styles.questionTitleStyle}>题目分类</Typography>
+                        <Typography variant="body1" sx={styles.questionTitleStyle}>Category</Typography>
 
                         <RadioGroup
                             row
@@ -345,14 +346,12 @@ function RandomProblem(): React.ReactElement {
                     <Divider variant="middle" />
 
                     <ListItem sx = {styles.questionRowListStyle}>
-                        <Typography variant="body1" sx={styles.questionTitleStyle}>题目标签</Typography>
+                        <Typography variant="body1" sx={styles.questionTitleStyle}>Topic Tags</Typography>
 
                         <div style={styles.selectionStyle}>
-                            <FormControl fullWidth sx={{ m: '2px', minWidth: '200px'}}>
+                            <FormControl fullWidth sx={{ m: '2px', minWidth: '250px'}}>
                                 <InputLabel id="demo-multiple-name-label">Tags</InputLabel>
                                 <Select
-                                    labelId="demo-multiple-name-label"
-                                    id="demo-multiple-name"
                                     multiple
                                     value={inputTopicTags}
                                     onChange={onTopicTagsChange}
@@ -383,13 +382,13 @@ function RandomProblem(): React.ReactElement {
 
                     {!inputNewOld && <div>
                         <ListItem sx = {styles.questionRowListStyle}>
-                            <Typography variant="body1" sx={styles.questionTitleStyle}>熟练度</Typography>
+                            <Typography variant="body1" sx={styles.questionTitleStyle}>{texts_en.recordProficiency}</Typography>
 
                             <TextField
                                 sx={styles.shortSelectionStyle}
                                 margin="normal"
                                 id="proficiencyLow"
-                                label="最低熟练度"
+                                label={texts_en.recordProficiencyLow_short}
                                 type="number"
                                 defaultValue="0"
                                 onChange = {onProficiencyLowChange}
@@ -402,7 +401,7 @@ function RandomProblem(): React.ReactElement {
                                 sx={styles.shortSelectionStyle}
                                 margin="normal"
                                 id="proficiencyHigh"
-                                label="最高熟练度"
+                                label={texts_en.recordProficiencyHigh_short}
                                 type="number"
                                 defaultValue="5"
                                 onChange = {onProficiencyHighChange}
@@ -413,13 +412,13 @@ function RandomProblem(): React.ReactElement {
                         <Divider variant="middle" />
 
                         <ListItem sx = {styles.questionRowListStyle}>
-                            <Typography variant="body1" sx={styles.questionTitleStyle}>刷题次数</Typography>
+                            <Typography variant="body1" sx={styles.questionTitleStyle}>{texts_en.recordACCount}</Typography>
 
                             <TextField
                                 sx={styles.shortSelectionStyle}
                                 margin="normal"
                                 id="countMin"
-                                label="最小次数"
+                                label={texts_en.recordACCountMin}
                                 type="number"
                                 defaultValue="0"
                                 onChange = {onCountMinChange}
@@ -432,7 +431,7 @@ function RandomProblem(): React.ReactElement {
                                 sx={styles.shortSelectionStyle}
                                 margin="normal"
                                 id="countMax"
-                                label="最大次数"
+                                label={texts_en.recordACCountMax}
                                 type="number"
                                 defaultValue="10000000"
                                 onChange = {onCountMaxChange}
@@ -445,7 +444,7 @@ function RandomProblem(): React.ReactElement {
 
                     <ListItem sx = {styles.questionRowListStyle}>
                         <Button variant = "contained" color = "primary" onClick = {onRandom} sx = {{width: 200, height: 50, margin : 1,}}>
-                            <Typography variant="body1">试试手气</Typography>
+                            <Typography variant="h5">Lottery!</Typography>
                         </Button>
                     </ListItem>
 
@@ -503,10 +502,8 @@ function RandomProblem(): React.ReactElement {
                             <Divider variant="middle" />
 
                             <ListItem sx = {styles.questionRowListStyle}>
-                                <Button variant="outlined" sx={{mt: 1}} onClick={onProblemButtonClick}>
-                                    <Typography>
-                                        查看题目
-                                    </Typography>
+                                <Button variant="contained" sx={{mt: 1}} onClick={onProblemButtonClick}>
+                                    <Typography variant="h5">Solve Problem!</Typography>
                                 </Button>
                             </ListItem>
 

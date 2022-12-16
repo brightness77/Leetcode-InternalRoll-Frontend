@@ -1,7 +1,8 @@
-import TopBar from "../TopBar";
+import TopBar from "../../components/Bar/TopBar";
 import {Container, Box, Typography} from "@mui/material"
-import confused from "../../static/img/DuckConfused.png"
+import confused from "../../static/img/keda_1.png"
 import { globalStyles } from "../../context/ConfigProvider";
+import FooterComponent from "../../components/Bar/FooterComponent";
 
 
 const styles = {
@@ -22,8 +23,9 @@ const styles = {
 function NotFoundView(): React.ReactElement {
 
     return (
-        <>
+        <Container maxWidth = {false} disableGutters = {true} sx = {globalStyles.viewContainerStyle}>
             <TopBar />
+
             <Container sx = {globalStyles.viewWholeContainerStyle}>
                 <Box sx = {{
                     display: 'flex',
@@ -36,7 +38,9 @@ function NotFoundView(): React.ReactElement {
                     </Typography>
                 </Box>
             </Container>
-        </>
+
+            <FooterComponent />
+        </Container>
     );
 }
 

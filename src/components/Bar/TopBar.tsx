@@ -1,10 +1,10 @@
 import {AppBar, Toolbar, Menu, Typography, Button, MenuItem, Divider} from "@mui/material";
-import iconImg from "../static/img/icon_long.png";
+import iconImg from "../../static/img/icon_long.png";
 import React, { useCallback, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { globalDimensions } from "../context/ConfigProvider";
-import RunContext from "../context/RunContextProvider";
-import LeetcodeRequest from "../utils/LeetcodeRequest";
+import { globalDimensions } from "../../context/ConfigProvider";
+import RunContext from "../../context/RunContextProvider";
+import LeetcodeRequest from "../../utils/LeetcodeRequest";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 
@@ -49,7 +49,7 @@ function TopBar(): React.ReactElement {
     const open = Boolean(anchorEl);
 
 
-
+    //bar buttons
     const onCheckButtonClick = useCallback(() => {
         navigate('/check');
     }, [navigate]);
@@ -74,6 +74,16 @@ function TopBar(): React.ReactElement {
         navigate('/signup');
     }, [navigate]);
 
+    const onAdminClick = useCallback(() => {
+        if(role !== 'Admin'){
+            navigate('/403');
+        } else {
+            navigate('/admin');
+        }
+    }, [navigate, role]);
+
+
+    // username menu buttons
     const onNameTextClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(e.currentTarget);
     }, [username, anchorEl]);
@@ -83,22 +93,29 @@ function TopBar(): React.ReactElement {
     }, [anchorEl]);
 
     const onMyProfileClick = useCallback(() => {
-        
+        navigate(`/profile/${username}`);
         onNameMenuClose();
     }, [anchorEl]);
 
     const onMyRecordClick = useCallback(() => {
-        navigate('/my/record');
+        navigate('/my/record/All');
         onNameMenuClose();
     }, [anchorEl]);
 
-    const onAdminClick = useCallback(() => {
-        if(role !== 'Admin'){
-            navigate('/403');
-        } else {
-            navigate('/admin');
-        }
-    }, [navigate, role]);
+    const onMyProficiencyClick = useCallback(() => {
+        navigate('/my/proficiency');
+        onNameMenuClose();
+    }, [anchorEl]);
+
+    const onMyTopicClick = useCallback(() => {
+        navigate('/my/topic');
+        onNameMenuClose();
+    }, [anchorEl]);
+
+    const onMyStudyListClick = useCallback(() => {
+        navigate('/my/studylist');
+        onNameMenuClose();
+    }, [anchorEl]);
 
     const onLogOutClick = useCallback(() => {
         localStorage.clear();
@@ -122,13 +139,13 @@ function TopBar(): React.ReactElement {
 
                 <Button variant = "outlined" color = "primary" onClick = {onChooseClick} sx = {styles.optionButton}>
                     <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>
-                        做题
+                        Problem
                     </Typography>
                 </Button>
 
                 <Button variant = "outlined" color = "primary" onClick = {onRandomClick} sx = {styles.optionButton}>
                     <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>
-                        抽题
+                        Random Problem
                     </Typography>
                 </Button>
 
@@ -160,17 +177,29 @@ function TopBar(): React.ReactElement {
                     <Menu anchorEl={anchorEl} open={open} onClose={onNameMenuClose} MenuListProps={{'aria-labelledby': 'basic-button',}}>
 
                         <MenuItem onClick={onMyProfileClick}>
-                            <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>Profile</Typography>
+                            <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>My Profile</Typography>
                         </MenuItem>
 
                         <MenuItem onClick={onMyRecordClick}>
-                            <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>刷题记录</Typography>
+                            <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>Problem Record</Typography>
                         </MenuItem>
 
+                        <MenuItem onClick={onMyTopicClick}>
+                            <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>Topics</Typography>
+                        </MenuItem>
+
+                        <MenuItem onClick={onMyProficiencyClick}>
+                            <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>Proficiencies</Typography>
+                        </MenuItem>
+
+                        <MenuItem onClick={onMyStudyListClick}>
+                            <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>Studylist</Typography>
+                        </MenuItem>
+                        
                         <Divider />
 
                         <MenuItem onClick={onLogOutClick}>
-                            <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>登出</Typography>
+                            <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>Log Out</Typography>
                         </MenuItem>
 
                     </Menu>
@@ -180,13 +209,13 @@ function TopBar(): React.ReactElement {
                     <>
                     <Button variant = "text" color = "secondary" onClick = {onLogInClick} sx = {styles.optionButton}>
                         <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>
-                            登录
+                            Log In
                         </Typography>
                     </Button>
 
                     <Button variant = "text" color = "secondary" onClick = {onSignUpClick} sx = {styles.optionButton}>
                         <Typography variant = "topbarButtom" component = "div" sx = {styles.titleText}>
-                            注册
+                            Sign Up
                         </Typography>
                     </Button>
                     </>

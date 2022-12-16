@@ -16,39 +16,46 @@ import AdminView from './view/AdminView';
 import ForbiddenView from './view/4XX/ForbiddenView';
 import MyRecordView from './view/user/MyRecordView';
 import ChooseProblemView from './view/ProblemChoose/ChooseProblemView';
+import ProfileView from './view/user/ProfileView';
+import MyProficiencyView from './view/user/MyProficiencyView';
+import MyStudyListView from './view/user/MyStudyListView';
+import MyTopicView from './view/user/MyTopicView';
 
 
 
 function App(): React.ReactElement {
 
 	return (
-		<>
-			<RunContextProvider>
-				<ThemeProvider theme = {theme}>
-					<BrowserRouter>
-						<Routes>
-							<Route path = '/' element = {<IndexView />} />
+		<RunContextProvider>
+			<ThemeProvider theme = {theme}>
+				<BrowserRouter>
+					<Routes>
+						<Route path = '/' element = {<IndexView />} />
 
-							<Route path = '/signup' element = {<SignUpView />} />
-							<Route path = '/login' element = {<LogInView />} />
+						<Route path = '/signup' element = {<SignUpView />} />
+						<Route path = '/login' element = {<LogInView />} />
 
-							<Route path = '/admin' element = {<AdminRoute> <AdminView /> </AdminRoute>} />
-							<Route path = '/my/record' element = {<MyRecordView />} />
+						<Route path = '/admin' element = {<AdminRoute> <AdminView /> </AdminRoute>} />
+						<Route path = '/my/record/:topicSlug' element = {<MyRecordView />} />
+						<Route path = '/my/proficiency' element = {<MyProficiencyView />} />
+						<Route path = '/my/topic' element = {<MyTopicView />} />
+						<Route path = '/my/studylist' element = {<MyStudyListView />} />
 
-							<Route path = '/check' element = {<CheckUserView />} />
-							<Route path = '/random-problem' element = {<RandomProblemView />} />
-							<Route path = '/choose-problem' element = {<ChooseProblemView />} />
+						<Route path = '/profile/:profileUsername' element = {<ProfileView />} />
 
-							<Route path = '/problemsolve/:titleSlug' element = {<ProblemSolveView />} />
+						<Route path = '/check' element = {<CheckUserView />} />
+						<Route path = '/random-problem' element = {<RandomProblemView />} />
+						<Route path = '/choose-problem' element = {<ChooseProblemView />} />
 
-							<Route path = '/403' element = {<ForbiddenView />} />
-							<Route path = '/404' element = {<NotFoundView />} />
-							<Route path = '*' element = {<NotFoundView />} />
-						</Routes>
-					</BrowserRouter>
-				</ThemeProvider>
-			</RunContextProvider>
-		</>
+						<Route path = '/problemsolve/:titleSlug' element = {<ProblemSolveView />} />
+
+						<Route path = '/403' element = {<ForbiddenView />} />
+						<Route path = '/404' element = {<NotFoundView />} />
+						<Route path = '*' element = {<NotFoundView />} />
+					</Routes>
+				</BrowserRouter>
+			</ThemeProvider>
+		</RunContextProvider>
 	);
 }
 

@@ -2,10 +2,9 @@ import { Theme } from "@emotion/react";
 import { Button, Checkbox, Chip, CircularProgress, Divider, FormControl, FormControlLabel, InputLabel, LinearProgress, Link, List, ListItem, ListItemText, MenuItem, OutlinedInput, Paper, Radio, RadioGroup, Select, SelectChangeEvent, Skeleton, Stack, TextField, Typography, useTheme } from "@mui/material";
 import { Box, Container } from "@mui/system";
 import { useCallback, useState } from "react";
-import { globalMessages } from "../../context/ConfigProvider";
-import twoImg from "../../static/img/two_1.jpeg";
+import { globalMessages, texts_en } from "../../context/ConfigProvider";
+import twoImg from "../../static/img/20exp.jpg";
 import LeetcodeRequest from "../../utils/LeetcodeRequest";
-import { topicTags } from "../../context/TopicTags";
 import { useNavigate } from "react-router-dom";
 
 
@@ -15,12 +14,12 @@ const styles = {
         display:'flex',
         flexDirection:'row',
         justifyContent:'center',
-        mt: '5%',
+        mt: '2%',
     },
 
     imgStyle : {
-        width : '300px',
-        height : '180px',
+        width : '500px',
+        height : '320px',
     },
 
     easyDiff : {
@@ -106,7 +105,7 @@ function ChooseProblem(): React.ReactElement {
     const [problemNagivation, setProblemNagivation] = useState('/random-problem');
 
     //display statusMessage
-    const [statusMessage, setStatusMessage] = useState('题否');
+    const [statusMessage, setStatusMessage] = useState('');
 
     //status states
     const [isLoading, setIsLoading] = useState(false);
@@ -215,17 +214,17 @@ function ChooseProblem(): React.ReactElement {
                 <List sx={{ alignItems:'center', }}>
 
                     <ListItem sx = {styles.questionRowListStyle}>
-                        <Typography variant="h3" sx={styles.formTitleStyle}>指定题目</Typography>
+                        <Typography variant="h4" sx={styles.formTitleStyle}>Search Problem</Typography>
                     </ListItem>
 
                     <ListItem sx = {styles.questionRowListStyle}>
-                        <Typography variant="body1" sx={styles.questionTitleStyle}>熟练度</Typography>
+                        <Typography variant="body1" sx={styles.questionTitleStyle}>{texts_en.problemFrontendID}</Typography>
 
                         <TextField
                             sx={styles.selectionStyle}
                             margin="normal"
                             id="proficiencyLow"
-                            label="题号"
+                            label={texts_en.problemFrontendID_short}
                             defaultValue="0"
                             value={inputFrontendID}
                             onChange = {onFrontendIDChange}
@@ -237,7 +236,7 @@ function ChooseProblem(): React.ReactElement {
 
                     <ListItem sx = {styles.questionRowListStyle}>
                         <Button variant = "contained" color = "primary" onClick = {onSubmit} sx = {{width: 200, height: 50, margin : 1,}}>
-                            <Typography variant="body1">查找题目</Typography>
+                            <Typography variant="h5">Search</Typography>
                         </Button>
                     </ListItem>
 
@@ -295,10 +294,8 @@ function ChooseProblem(): React.ReactElement {
                             <Divider variant="middle" />
 
                             <ListItem sx = {styles.questionRowListStyle}>
-                                <Button variant="outlined" sx={{mt: 1}} onClick={onProblemButtonClick}>
-                                    <Typography>
-                                        查看题目
-                                    </Typography>
+                                <Button variant="contained" sx={{mt: 1}} onClick={onProblemButtonClick}>
+                                    <Typography variant='h5'>Solve Problem!</Typography>
                                 </Button>
                             </ListItem>
 

@@ -1,21 +1,31 @@
 import { Container } from "@mui/system";
-import { useParams } from "react-router-dom";
-import MyRecordComponent from "../../components/User/MyRecordHome";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import MyProfileHome from "../../components/User/MyProfileHome";
 import { globalStyles } from "../../context/ConfigProvider";
 import TopBar from "../../components/Bar/TopBar";
 import FooterComponent from "../../components/Bar/FooterComponent";
 
 
-function MyRecordView() : React.ReactElement {
 
-    const {topicSlug} = useParams();
+function ProfileView() : React.ReactElement {
+
+    const {profileUsername} = useParams();
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if(profileUsername === null){
+            navigate('/404');
+        }
+    }, [profileUsername]);
 
     return (
         <Container maxWidth = {false} disableGutters = {true} sx = {globalStyles.viewContainerStyle}>
             <TopBar />
 
             <Container sx={globalStyles.viewWholeContainerStyle}>
-                <MyRecordComponent topicSlug={topicSlug} />
+                <MyProfileHome profileUsername={profileUsername} />
             </Container>
 
             <FooterComponent />
@@ -23,4 +33,4 @@ function MyRecordView() : React.ReactElement {
     );
 };
 
-export default MyRecordView;
+export default ProfileView;

@@ -12,7 +12,7 @@ const styles = {
         display:'flex',
         flexDirection:'row',
         justifyContent:'center',
-        mt: '5%',
+        mt: '2%',
     },
 
     imgStyle : {

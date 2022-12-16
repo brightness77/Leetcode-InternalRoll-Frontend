@@ -37,7 +37,7 @@ const theme = createTheme({
 
         text : {
             primary : '#6c4501',
-            secondary : '#202020',
+            secondary : '#909090',
         },
     },
 
@@ -58,29 +58,32 @@ const theme = createTheme({
 
         body1 : {
             fontFamily : 'Anonymous Pro',
-            fontSize: 20,
+            color: 'primary',
+            fontSize: '18px',
         },
 
         body2 : {
             fontFamily : 'Anonymous Pro',
-            fontSize: 20,
-            color: 'secondary.dark',
+            color: 'secondary',
+            fontSize: '18px',
         },
 
         h2 : {
             fontFamily : 'Anonymous Pro',
-            fontSize: 60,
             color: 'secondary',
         },
 
         h3 : {
             fontFamily : 'Anonymous Pro',
-            fontSize: 30,
+        },
+
+        h4 : {
+            fontFamily : 'Anonymous Pro',
         },
 
         topbarButtom : {
             fontFamily : 'Anonymous Pro',
-            fontSize: 20,
+            fontSize: '18px',
             color: 'secondary.dark',
         },
     }

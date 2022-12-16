@@ -1,6 +1,6 @@
 import { Alert, Box, Button, CircularProgress, Container, Divider, Link, List, ListItem, Paper, Slider, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { ReactElement, useCallback, useEffect, useState } from "react";
-import { globalMessages } from "../../context/ConfigProvider";
+import { globalMessages, texts_en } from "../../context/ConfigProvider";
 import LeetcodeRequest from "../../utils/LeetcodeRequest";
 import pika from "../../static/img/thoughtful-pikachu.gif";
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
@@ -10,8 +10,8 @@ import Looks3Icon from '@mui/icons-material/Looks3';
 import Looks4Icon from '@mui/icons-material/Looks4';
 import Looks5Icon from '@mui/icons-material/Looks5';
 import Looks6Icon from '@mui/icons-material/Looks6';
-import { TIMEOUT } from "dns";
 import { Navigate, useNavigate } from "react-router-dom";
+
 
 
 const styles = {
@@ -20,7 +20,7 @@ const styles = {
         display:'flex',
         flexDirection:'row',
         justifyContent:'center',
-        mt: '5%',
+        mt: '2%',
     },
 
     imgStyle : {
@@ -57,6 +57,7 @@ const styles = {
 
     listItemLeftStyle : {
         mr:'50px',
+        width:'35%',
         flexGrow : 0,
     },
 
@@ -165,6 +166,13 @@ function ProblemRecord(
     const [recordRecentProficiency, setRecordRecentProficiency] = useState(0);
 
 
+    //problem solve record variables
+    const [isSolveLoading, setIsSolveLoading] = useState(false);
+
+    const [solveProficiency, setSolveProficiency] = useState(-1);
+    const [solveStatusMessage, setSolveStatusMessage] = useState<string | null>(null);
+
+
 
 
     //problem & problem record handlers
@@ -212,6 +220,8 @@ function ProblemRecord(
 
         if(status === 504) {
             setProblemStatusMessage(globalMessages.serverErrorMessage);
+        } else if (status === 500) {
+            setProblemStatusMessage(globalMessages.needRefreshMessage);
         } else if (status === 401) {
             setProblemStatusMessage(globalMessages.loginRequiredMessage);
         } else if (status === 400) {
@@ -230,8 +240,7 @@ function ProblemRecord(
     }, []);
 
     const onProblemRequestError = useCallback(() => {
-        console.log('error');
-
+        //console.log('error');
         setProblemStatusMessage(globalMessages.serverErrorMessage);
 
         setIsProblemLoading(false);
@@ -239,26 +248,7 @@ function ProblemRecord(
     }, []);
 
 
-    //fetching problem
-    const getProblemRecord = useEffect(() => {
-        new LeetcodeRequest(`problemrecord/${titleSlug}`, 'GET')
-        .onStart(onProblemRequestStart)
-        .onSuccess(onProblemRequestSuccess)
-        .onFailure(onProblemRequestFailure)
-        .onError(onProblemRequestError)
-        .send();
 
-        console.log('Request sent');
-    }, [titleSlug]);
-
-
-
-
-    //problem solve record variables
-    const [isSolveLoading, setIsSolveLoading] = useState(false);
-
-    const [solveProficiency, setSolveProficiency] = useState(-1);
-    const [solveStatusMessage, setSolveStatusMessage] = useState<string | null>(null);
 
 
     //problem solve record handlers
@@ -289,8 +279,9 @@ function ProblemRecord(
         setSolveProficiency(-1);
         setSolveStatusMessage("提交成功! 离上岸又近了一步!");
         setIsSolveLoading(false);
-        
-        navigate(`/problemsolve/${titleSlug}`);
+
+        fetchRecord(titleSlug);
+
     }, []);
 
     const onSolveFailure = useCallback((e: any, status: number) => {
@@ -325,13 +316,31 @@ function ProblemRecord(
 
 
     const onSubmitSolve = useCallback(() => {
-        new LeetcodeRequest(`problemrecord/${titleSlug}/createSolve?proficiency=${solveProficiency}`, 'GET')
+        new LeetcodeRequest(`problemsolverecord/${titleSlug}/createSolve?proficiency=${solveProficiency}`, 'POST')
         .onStart(onSolveStart)
         .onSuccess(onSolveSuccess)
         .onFailure(onSolveFailure)
         .onError(onSolveError)
         .send();
     }, [solveProficiency]);
+
+
+
+    //request to backend
+    const fetchRecord = useCallback((titleSlug : (string | undefined)) => {
+        new LeetcodeRequest(`problemrecord/record/${titleSlug}`, 'GET')
+        .onStart(onProblemRequestStart)
+        .onSuccess(onProblemRequestSuccess)
+        .onFailure(onProblemRequestFailure)
+        .onError(onProblemRequestError)
+        .send();
+
+        console.log('Request sent');
+    }, [titleSlug]);
+
+    useEffect(() => {
+        fetchRecord(titleSlug);
+    }, [titleSlug]);
 
 
 
@@ -379,7 +388,7 @@ function ProblemRecord(
                             <ListItem sx = {styles.listItemStyle}>
 
                                 <Typography variant="body1" sx={styles.listItemLeftStyle}>
-                                    刷题次数
+                                    {texts_en.recordACCount}
                                 </Typography>
 
                                 <Typography variant="body1" sx={styles.listItemRightStyle}>
@@ -393,7 +402,7 @@ function ProblemRecord(
                             <ListItem sx = {styles.listItemStyle}>
 
                                 <Typography variant="body1" sx={styles.listItemLeftStyle}>
-                                    总体熟练度
+                                    {texts_en.recordAverageProficiency}
                                 </Typography>
 
                                 <div style={styles.listItemRightStyle}>
@@ -407,7 +416,7 @@ function ProblemRecord(
                             <ListItem sx = {styles.listItemStyle}>
 
                                 <Typography variant="body1" sx={styles.listItemLeftStyle}>
-                                    最近熟练度
+                                {texts_en.recordRecentProficiency}
                                 </Typography>
 
                                 <div style={styles.listItemRightStyle}>
@@ -441,8 +450,8 @@ function ProblemRecord(
                 <List sx={{ alignItems:'center', justifyItems:'center'}}>
 
                     <ListItem sx = {styles.listItemStyle}>
-                        <Typography variant="h4" sx={styles.listItemLeftStyle}>
-                            新的做题记录
+                        <Typography variant="h4" sx={{}}>
+                            New Solve Record!
                         </Typography>
                     </ListItem>
 
