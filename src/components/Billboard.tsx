@@ -2,16 +2,9 @@ import { useCallback, useState, useEffect } from "react";
 import LeetcodeRequest from "../utils/LeetcodeRequest";
 import {Typography, Container, Stack, Paper, Box, CircularProgress, LinearProgress, List, ListItem, Skeleton, Divider} from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { globalMessages } from "../context/ConfigProvider";
+import { globalMessages, globalStyles } from "../context/ConfigProvider";
 
 
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#eeeeee',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-}));
 
 
 const styles = {
@@ -25,21 +18,6 @@ const styles = {
     inputBoxStyle : {
         'font-size' : 25,
         'size' : 30,
-    },
-
-    wholeContainerStyle : {
-        display:'flex',
-        flexDirection:'column',
-        justifyContent:'center',
-        alignItems:'center',
-        mt: '1%',
-    },
-
-    wholePaperStyle : {
-        m:'10px',
-        width : '75%',
-        minWidth : '800px',
-        minHeight : '200px',
     },
 
     listStyle : {
@@ -116,9 +94,9 @@ function Billboard(): React.ReactElement {
 
 
     return (
-        <Container component = "main" sx = {styles.wholeContainerStyle}>
+        <Container component = "main" sx = {globalStyles.component.mainContainer.flexColumnAlignCenter.withGap}>
 
-            <Paper variant="outlined" sx= {styles.wholePaperStyle}>
+            <Paper variant="outlined" sx= {globalStyles.component.mainPaper.withMargin}>
 
                 <List sx={styles.listStyle}>
                     <ListItem sx={styles.listItemStyle}>

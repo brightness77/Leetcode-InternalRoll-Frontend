@@ -2,49 +2,19 @@ import { Theme } from "@emotion/react";
 import { Button, Checkbox, Chip, CircularProgress, Divider, FormControl, FormControlLabel, InputLabel, LinearProgress, Link, List, ListItem, ListItemText, MenuItem, OutlinedInput, Paper, Radio, RadioGroup, Select, SelectChangeEvent, Skeleton, Stack, TextField, Typography, useTheme } from "@mui/material";
 import { Box, Container } from "@mui/system";
 import { useCallback, useState } from "react";
-import { globalMessages, texts_en } from "../../context/ConfigProvider";
-import twoImg from "../../static/img/jieni_1.png";
+import { globalMessages, globalStyles, texts_en } from "../../context/ConfigProvider";
 import LeetcodeRequest from "../../utils/LeetcodeRequest";
 import { topicTags } from "../../context/TopicTags";
 import { useNavigate } from "react-router-dom";
 import FormHelperText from "@mui/material/FormHelperText";
+import ProblemEntry from "./ProblemEntryComponent";
 
 
 const styles = {
 
-    mainContainerStyle : {
-        display:'flex',
-        flexDirection:'row',
-        justifyContent:'center',
-        mt: '2%',
-    },
-
     imgStyle : {
         width : '400px',
         height : '330px',
-    },
-
-    easyDiff : {
-        fontWeight: 'bold',
-        color : '#3ac81d',
-    },
-
-    mediumDiff : {
-        fontWeight: 'bold',
-        color : '#d2900c'
-    },
-
-    hardDiff : {
-        fontWeight: 'bold',
-        color : '#d2230c'
-    },
-
-    paperStyle : {
-        m:'20px',
-        p:'10px',
-        width:'600px',
-        minHeight:'200px',
-        borderRadius:'0px', 
     },
 
     radioStyle : {
@@ -95,8 +65,6 @@ const styles = {
 
 function RandomProblem(): React.ReactElement {
 
-    const nagivate = useNavigate();
-
     //input states
     const [inputDiff, setInputDiff] = useState(0);
     const [inputNewOld, setInputNewOld] = useState(true);
@@ -107,98 +75,64 @@ function RandomProblem(): React.ReactElement {
     const [inputCountMin, setInputCountMin] = useState(0);
     const [inputCountMax, setInputCountMax] = useState(10000000);
 
-    //display props
-    const [problemTitle, setProblemTitle] = useState(globalMessages.serverErrorMessage);
-    const [problemDifficulty, setProblemDifficulty] = useState('');
-    const [problemDiffStyle, setProblemDiffStyle] = useState(styles.easyDiff);
-    const [problemNagivation, setProblemNagivation] = useState('/random-problem');
+    //variables
+    const [problemEntryResponse, setProblemEntryResponse] = useState<any>(null);
 
     //display status message
-    const [statusMessage, setStatusMessage] = useState('');
-
-    //status states
+    const [statusMessage, setStatusMessage] = useState<string | null>("");
     const [isLoading, setIsLoading] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
 
 
 
     //handlers
-
-    const onProblemButtonClick = useCallback(() => {
-        nagivate(problemNagivation);
-    }, [problemNagivation]);
+    const onRequestStart = useCallback(() => {
+        setIsLoading(true);
+        setStatusMessage(null);
+    }, []);
 
 
     const onRequestSuccess = useCallback((response : any) => {
         //console.log("Succeed!");
-
-        const parsedResponse = JSON.parse(response);
         setIsLoading(false);
 
-        if(parsedResponse === null){
-            setIsSuccess(false);
-
-            setStatusMessage('怎么肥四,一道题都没有找到!');
-        } else {
-            setIsSuccess(true);
-
-            setProblemTitle(parsedResponse.frontendID + ". " + parsedResponse.title);
-            if(parsedResponse.difficulty == 1){
-                setProblemDifficulty('Easy');
-                setProblemDiffStyle(styles.easyDiff);
-            } else if (parsedResponse.difficulty == 2){
-                setProblemDifficulty('Medium');
-                setProblemDiffStyle(styles.mediumDiff);
+        try{
+            const parsedResponse = JSON.parse(response);
+            if(parsedResponse === null){
+                setStatusMessage(globalMessages.noQualifiedProblem);
             } else {
-                setProblemDifficulty('Hard');
-                setProblemDiffStyle(styles.hardDiff);
+                setProblemEntryResponse(parsedResponse);
             }
-
-            setProblemNagivation(`/problemsolve/${parsedResponse.titleSlug}`);
-
-            let tagStrings = '';
-            parsedResponse.topicTags.forEach(function (value : string) {
-                //console.log('Parsed topic tags of ' + value);
-                tagStrings += (value + ', ');
-            });
-            //setProblemTopicTags(tagStrings);
+        } catch(e){
+            setStatusMessage(globalMessages.serverErrorMessage);
         }
-    }, [statusMessage]);
+    }, []);
 
 
     const onRequestFailure = useCallback((e : any, status : number) => {
-        console.log("Failure!");
+        //console.log("Failure!");
 
         setIsLoading(false);
-        setIsSuccess(false);
 
         if(status === 504) {
             setStatusMessage(globalMessages.serverErrorMessage);
         } else if (status === 401) {
             setStatusMessage(globalMessages.loginRequiredMessage);
         } else if (status === 400) {
-            let parsedResponse = JSON.parse(e);
-            if(parsedResponse.message === 'No result found!'){
-                setStatusMessage("没有找到符合条件的题!");
-            } else {
-                setStatusMessage(globalMessages.serverErrorMessage);
-            }
+            setStatusMessage(globalMessages.noQualifiedProblem);
         } else {
             setStatusMessage(globalMessages.serverErrorMessage);
         }
 
-    }, [statusMessage, setStatusMessage]);
+    }, []);
 
 
     const onRequestError = useCallback(() => {
-        console.log("Error!");
+        //console.log("Error!");
 
         setIsLoading(false);
-        setIsSuccess(false);
-
         setStatusMessage(globalMessages.serverErrorMessage);
 
-    }, [problemTitle, problemDifficulty]);
+    }, []);
 
 
     const onRandom = useCallback(() => {
@@ -219,6 +153,7 @@ function RandomProblem(): React.ReactElement {
 
         new LeetcodeRequest(`problem/getrandom`, 'POST')
             .setPayload(newPayload)
+            .onStart(onRequestStart)
             .onSuccess(onRequestSuccess)
             .onFailure(onRequestFailure)
             .onError(onRequestError)
@@ -277,254 +212,191 @@ function RandomProblem(): React.ReactElement {
 
 
     return (
-        <Container component = "main" maxWidth={false} sx = {styles.mainContainerStyle}>
+        <Container component = "main" maxWidth='lg' disableGutters sx = {globalStyles.component.mainContainer.flexRowAlignFlexStart.withGap}>
 
-            <Paper variant="outlined" elevation={10} sx={styles.paperStyle}>
-                <List sx={{ alignItems:'center', }}>
+            <Container maxWidth={false} disableGutters sx = {globalStyles.component.subContainer.flexColumnAlignCenter.withMargin}>
+                <Paper variant="outlined" elevation={10} sx={globalStyles.component.mainPaper.withMargin}>
+                    <List sx={{ alignItems:'center', }}>
 
-                    <ListItem sx = {styles.questionRowListStyle}>
-                        <Typography variant="h4" sx={styles.formTitleStyle}>Random Problem</Typography>
-                    </ListItem>
-
-                    <Divider variant="middle" />
-                    
-                    <ListItem sx = {styles.questionRowListStyle}>
-                        <Typography variant="body1" sx={styles.questionTitleStyle}>Problem Type</Typography>
-
-                        <RadioGroup
-                            row
-                            aria-labelledby="demo-radio-buttons-group-label"
-                            defaultValue="new"
-                            name="radio-buttons-group"
-                            onChange={onNewOldChange}
-                            sx={styles.selectionStyle}
-                        >
-                            <FormControlLabel value='new' control={<Radio />} label="New Problem" sx={styles.radioStyle} />
-                            <FormControlLabel value='old' control={<Radio />} label="Old Problem" sx={styles.radioStyle} />
-                        </RadioGroup>
-                    </ListItem>
-
-                    <Divider variant="middle" />
-
-                    <ListItem sx = {styles.questionRowListStyle}>
-                        <Typography variant="body1" sx={styles.questionTitleStyle}>Difficulty</Typography>
-
-                        <RadioGroup
-                            row
-                            aria-labelledby="demo-radio-buttons-group-label"
-                            defaultValue="0"
-                            name="radio-buttons-group"
-                            onChange={onDiffChange}
-                            sx={styles.selectionStyle}
-                        >
-                            <FormControlLabel value='0' control={<Radio />} label="All"  sx={styles.radioStyle} />
-                            <FormControlLabel value='1' control={<Radio />} label="Easy" sx={styles.radioStyle} />
-                            <FormControlLabel value='2' control={<Radio />} label="Medium" sx={styles.radioStyle} />
-                            <FormControlLabel value='3' control={<Radio />} label="Hard" sx={styles.radioStyle} />
-                        </RadioGroup>
-                    </ListItem>
-
-                    <Divider variant="middle" />
-
-                    <ListItem sx = {styles.questionRowListStyle}>
-                        <Typography variant="body1" sx={styles.questionTitleStyle}>Category</Typography>
-
-                        <RadioGroup
-                            row
-                            aria-labelledby="demo-radio-buttons-group-label"
-                            defaultValue='algorithms'
-                            name="radio-buttons-group"
-                            onChange={onCategoryChange}
-                            sx={styles.selectionStyle}
-                        >
-                            <FormControlLabel value='algorithms' control={<Radio />} label="Algorithm" sx={styles.radioStyle} />
-                            <FormControlLabel value='database' control={<Radio />} label="Database" sx={styles.radioStyle} />
-                            <FormControlLabel value='shell' control={<Radio />} label="Shell" sx={styles.radioStyle} />
-                        </RadioGroup>
-                    </ListItem>
-
-                    <Divider variant="middle" />
-
-                    <ListItem sx = {styles.questionRowListStyle}>
-                        <Typography variant="body1" sx={styles.questionTitleStyle}>Topic Tags</Typography>
-
-                        <div style={styles.selectionStyle}>
-                            <FormControl fullWidth sx={{ m: '2px', minWidth: '250px'}}>
-                                <InputLabel id="demo-multiple-name-label">Tags</InputLabel>
-                                <Select
-                                    multiple
-                                    value={inputTopicTags}
-                                    onChange={onTopicTagsChange}
-                                    input={<OutlinedInput label="Name" />}
-                                    renderValue={(selected) => (
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                            {selected.map((value) => (
-                                                <Chip key={value} label={value} />
-                                            ))}
-                                        </Box>
-                                    )}
-                                    MenuProps={styles.MenuProps}
-                                >
-                                    {topicTags.map((name) => (
-                                        <MenuItem
-                                            key={name}
-                                            value={name}
-                                        >
-                                            {name}
-                                        </MenuItem>
-                                ))}
-                                </Select>
-                            </FormControl>
-                        </div>
-                    </ListItem>
-
-                    <Divider variant="middle" />
-
-                    {!inputNewOld && <div>
                         <ListItem sx = {styles.questionRowListStyle}>
-                            <Typography variant="body1" sx={styles.questionTitleStyle}>{texts_en.recordProficiency}</Typography>
+                            <Typography variant="h4" sx={styles.formTitleStyle}>Random Problem</Typography>
+                        </ListItem>
 
-                            <TextField
-                                sx={styles.shortSelectionStyle}
-                                margin="normal"
-                                id="proficiencyLow"
-                                label={texts_en.recordProficiencyLow_short}
-                                type="number"
-                                defaultValue="0"
-                                onChange = {onProficiencyLowChange}
-                                variant="outlined"
-                            />
+                        <Divider variant="middle" />
+                        
+                        <ListItem sx = {styles.questionRowListStyle}>
+                            <Typography variant="body1" sx={styles.questionTitleStyle}>Problem Type</Typography>
 
-                            <Divider orientation="vertical" sx={{ml:'10px', mr:'10px',}}/>
-
-                            <TextField
-                                sx={styles.shortSelectionStyle}
-                                margin="normal"
-                                id="proficiencyHigh"
-                                label={texts_en.recordProficiencyHigh_short}
-                                type="number"
-                                defaultValue="5"
-                                onChange = {onProficiencyHighChange}
-                                variant="outlined"
-                            />
+                            <RadioGroup
+                                row
+                                aria-labelledby="demo-radio-buttons-group-label"
+                                defaultValue="new"
+                                name="radio-buttons-group"
+                                onChange={onNewOldChange}
+                                sx={styles.selectionStyle}
+                            >
+                                <FormControlLabel value='new' control={<Radio />} label="New Problem" sx={styles.radioStyle} />
+                                <FormControlLabel value='old' control={<Radio />} label="Old Problem" sx={styles.radioStyle} />
+                            </RadioGroup>
                         </ListItem>
 
                         <Divider variant="middle" />
 
                         <ListItem sx = {styles.questionRowListStyle}>
-                            <Typography variant="body1" sx={styles.questionTitleStyle}>{texts_en.recordACCount}</Typography>
+                            <Typography variant="body1" sx={styles.questionTitleStyle}>Difficulty</Typography>
 
-                            <TextField
-                                sx={styles.shortSelectionStyle}
-                                margin="normal"
-                                id="countMin"
-                                label={texts_en.recordACCountMin}
-                                type="number"
+                            <RadioGroup
+                                row
+                                aria-labelledby="demo-radio-buttons-group-label"
                                 defaultValue="0"
-                                onChange = {onCountMinChange}
-                                variant="outlined"
-                            />
-
-                            <Divider orientation="vertical" sx={{ml:'10px', mr:'10px',}}/>
-
-                            <TextField
-                                sx={styles.shortSelectionStyle}
-                                margin="normal"
-                                id="countMax"
-                                label={texts_en.recordACCountMax}
-                                type="number"
-                                defaultValue="10000000"
-                                onChange = {onCountMaxChange}
-                                variant="outlined"
-                            />
+                                name="radio-buttons-group"
+                                onChange={onDiffChange}
+                                sx={styles.selectionStyle}
+                            >
+                                <FormControlLabel value='0' control={<Radio />} label="All"  sx={styles.radioStyle} />
+                                <FormControlLabel value='1' control={<Radio />} label="Easy" sx={styles.radioStyle} />
+                                <FormControlLabel value='2' control={<Radio />} label="Medium" sx={styles.radioStyle} />
+                                <FormControlLabel value='3' control={<Radio />} label="Hard" sx={styles.radioStyle} />
+                            </RadioGroup>
                         </ListItem>
 
                         <Divider variant="middle" />
-                    </div>}
-
-                    <ListItem sx = {styles.questionRowListStyle}>
-                        <Button variant = "contained" color = "primary" onClick = {onRandom} sx = {{width: 200, height: 50, margin : 1,}}>
-                            <Typography variant="h5">Lottery!</Typography>
-                        </Button>
-                    </ListItem>
-
-                </List>
-            </Paper>
-
-
-            <Paper variant="outlined" elevation={10} sx={styles.paperStyle}>
-
-                <List sx={{ alignItems:'center', justifyItems:'center'}}>
-                    <ListItem sx = {styles.questionRowListStyle}>
-                        <Box border={'1px'} borderColor={'secondary'} component='img' src = {twoImg} alt = "ROLL!" sx = {styles.imgStyle} />
-                    </ListItem>
-
-                    <Divider variant="middle" />
-
-                    {isLoading && <div>
 
                         <ListItem sx = {styles.questionRowListStyle}>
-                            <Skeleton width={'90%'} height={'40px'} animation="wave" />
+                            <Typography variant="body1" sx={styles.questionTitleStyle}>Category</Typography>
+
+                            <RadioGroup
+                                row
+                                aria-labelledby="demo-radio-buttons-group-label"
+                                defaultValue='algorithms'
+                                name="radio-buttons-group"
+                                onChange={onCategoryChange}
+                                sx={styles.selectionStyle}
+                            >
+                                <FormControlLabel value='algorithms' control={<Radio />} label="Algorithm" sx={styles.radioStyle} />
+                                <FormControlLabel value='database' control={<Radio />} label="Database" sx={styles.radioStyle} />
+                                <FormControlLabel value='shell' control={<Radio />} label="Shell" sx={styles.radioStyle} />
+                            </RadioGroup>
                         </ListItem>
+
+                        <Divider variant="middle" />
 
                         <ListItem sx = {styles.questionRowListStyle}>
-                            <Skeleton width={'40%'} height={'40px'} animation="wave" />
+                            <Typography variant="body1" sx={styles.questionTitleStyle}>Topic Tags</Typography>
+
+                            <div style={styles.selectionStyle}>
+                                <FormControl fullWidth sx={{ m: '2px', minWidth: '250px'}}>
+                                    <InputLabel id="demo-multiple-name-label">Tags</InputLabel>
+                                    <Select
+                                        multiple
+                                        value={inputTopicTags}
+                                        onChange={onTopicTagsChange}
+                                        input={<OutlinedInput label="Name" />}
+                                        renderValue={(selected) => (
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                {selected.map((value) => (
+                                                    <Chip key={value} label={value} />
+                                                ))}
+                                            </Box>
+                                        )}
+                                        MenuProps={styles.MenuProps}
+                                    >
+                                        {topicTags.map((name) => (
+                                            <MenuItem
+                                                key={name}
+                                                value={name}
+                                            >
+                                                {name}
+                                            </MenuItem>
+                                    ))}
+                                    </Select>
+                                </FormControl>
+                            </div>
                         </ListItem>
 
-                        <ListItem sx = {styles.questionRowListStyle}>
-                            <Skeleton width={'50%'} height={'40px'} animation="wave" />
-                        </ListItem>
+                        <Divider variant="middle" />
 
-                        <ListItem sx = {styles.questionRowListStyle}>
-                            <LinearProgress color = "primary" sx={{ m:'10px' , width: '90%'}} />
-                        </ListItem>
-
-                    </div>}
-
-                    {(!isLoading && isSuccess) &&
-                        //show success information here
-                        <div>
-
+                        {!inputNewOld && <div>
                             <ListItem sx = {styles.questionRowListStyle}>
-                                <Typography variant="body1" sx={{mt : 1}}>
-                                    {problemTitle}
-                                </Typography>
+                                <Typography variant="body1" sx={styles.questionTitleStyle}>{texts_en.recordProficiency}</Typography>
+
+                                <TextField
+                                    sx={styles.shortSelectionStyle}
+                                    margin="normal"
+                                    id="proficiencyLow"
+                                    label={texts_en.recordProficiencyLow_short}
+                                    type="number"
+                                    defaultValue="0"
+                                    onChange = {onProficiencyLowChange}
+                                    variant="outlined"
+                                />
+
+                                <Divider orientation="vertical" sx={{ml:'10px', mr:'10px',}}/>
+
+                                <TextField
+                                    sx={styles.shortSelectionStyle}
+                                    margin="normal"
+                                    id="proficiencyHigh"
+                                    label={texts_en.recordProficiencyHigh_short}
+                                    type="number"
+                                    defaultValue="5"
+                                    onChange = {onProficiencyHighChange}
+                                    variant="outlined"
+                                />
                             </ListItem>
 
                             <Divider variant="middle" />
 
                             <ListItem sx = {styles.questionRowListStyle}>
-                                <Typography variant="body1" sx={problemDiffStyle}>
-                                    {problemDifficulty}
-                                </Typography>
+                                <Typography variant="body1" sx={styles.questionTitleStyle}>{texts_en.recordACCount}</Typography>
+
+                                <TextField
+                                    sx={styles.shortSelectionStyle}
+                                    margin="normal"
+                                    id="countMin"
+                                    label={texts_en.recordACCountMin}
+                                    type="number"
+                                    defaultValue="0"
+                                    onChange = {onCountMinChange}
+                                    variant="outlined"
+                                />
+
+                                <Divider orientation="vertical" sx={{ml:'10px', mr:'10px',}}/>
+
+                                <TextField
+                                    sx={styles.shortSelectionStyle}
+                                    margin="normal"
+                                    id="countMax"
+                                    label={texts_en.recordACCountMax}
+                                    type="number"
+                                    defaultValue="10000000"
+                                    onChange = {onCountMaxChange}
+                                    variant="outlined"
+                                />
                             </ListItem>
 
                             <Divider variant="middle" />
+                        </div>}
 
-                            <ListItem sx = {styles.questionRowListStyle}>
-                                <Button variant="contained" sx={{mt: 1}} onClick={onProblemButtonClick}>
-                                    <Typography variant="h5">Solve Problem!</Typography>
-                                </Button>
-                            </ListItem>
+                        <ListItem sx = {styles.questionRowListStyle}>
+                            <Button variant = "contained" color = "primary" onClick = {onRandom} sx = {{width: 200, height: 50, margin : 1,}}>
+                                <Typography variant="h5">Lottery!</Typography>
+                            </Button>
+                        </ListItem>
 
-                        </div>
-                    }
+                    </List>
+                </Paper>
+            </Container>
 
-                    {(!isLoading && !isSuccess) &&
-                        //show status information here
-                        <div>
+            <Container maxWidth={false} disableGutters sx = {globalStyles.component.subContainer.flexColumnAlignCenter.withMargin}>
+                <ProblemEntry 
+                    isLoading={isLoading} 
+                    statusMessage={statusMessage} 
+                    problemEntryResponse={problemEntryResponse}
+                 />
+            </Container>
 
-                            <ListItem sx = {styles.questionRowListStyle}>
-                                <Typography variant="body1" sx={{mt : 1}}>
-                                    {statusMessage}
-                                </Typography>
-                            </ListItem>
-
-                        </div>
-                    }
-                    
-                </List>
-            </Paper>
+            
         </Container>
     );
 };

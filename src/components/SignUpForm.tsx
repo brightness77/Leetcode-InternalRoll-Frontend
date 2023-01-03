@@ -125,7 +125,7 @@ function SignUpForm() : React.ReactElement {
 
 
     return(
-        <Container component="main" maxWidth = "xs" sx={globalStyles.component.mainContainer.parentWithGap}>
+        <Container component="main" maxWidth = "xs" sx={globalStyles.component.mainContainer.flexColumnAlignCenter.withGap}>
             <Paper variant="outlined" sx={globalStyles.component.mainPaper.withoutMargin}>
                 <Box component='img' src={welcomeImg} alt="Welcome" style={styles.welcomeStyle} />
 

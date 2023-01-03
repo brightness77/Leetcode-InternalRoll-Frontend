@@ -1,7 +1,7 @@
-import { Button, Divider, FormControl, FormHelperText, InputLabel, LinearProgress, List, ListItem, MenuItem, OutlinedInput, Pagination, Paper, Select, Skeleton, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
+import { Link, Button, Divider, FormControl, FormHelperText, InputLabel, LinearProgress, List, ListItem, MenuItem, OutlinedInput, Pagination, Paper, Select, Skeleton, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import { ReactElement, useCallback, useContext, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { globalMessages, globalStyles, texts_en } from "../../context/ConfigProvider";
 import RunContext from "../../context/RunContextProvider";
 import LeetcodeRequest from "../../utils/LeetcodeRequest";
@@ -164,7 +164,7 @@ function MyRecordComponent(
 
     
     return (
-        <Container maxWidth="lg" sx={globalStyles.component.mainContainer.parentWithGap}>
+        <Container maxWidth="lg" sx={globalStyles.component.mainContainer.flexColumnAlignCenter.withGap}>
 
             <Paper variant="outlined" sx={globalStyles.component.mainPaper.withMargin}>
                 <List sx={globalStyles.component.list.listParent}>
@@ -201,14 +201,34 @@ function MyRecordComponent(
                 </List>
             </Paper>
 
-            {isLoading && <>
-                <LinearProgress sx={{width:'70%', m:'20px',}} />
-                {[...Array(pageSize)].map((v, i) => (<Skeleton animation="wave" sx={{width:'70%', height:'40px', m:'10px',}} />))}
-            </> }
+            {isLoading && <Paper variant="outlined" sx={globalStyles.component.mainPaper.withMargin}>
+                <List sx={globalStyles.component.list.listParent}>
+                    {[...Array(pageSize)].map((v, i) => (
+                    <ListItem sx={globalStyles.component.list.listItem.flexRowCenter}>
+                        <Skeleton animation="wave" sx={{width:'70%', height:'40px', }} />
+                    </ListItem>))}
+                </List>
+            </Paper> }
 
-            {statusMessage != null && <Typography>{statusMessage}</Typography>}
+            {statusMessage != null && 
+            <Paper variant="outlined" sx={globalStyles.component.mainPaper.withMargin}>
+                <List sx={globalStyles.component.list.listParent}>
+                    <ListItem sx={globalStyles.component.list.listItem.flexRowCenter}>
+                        <Typography variant="h6">{statusMessage}</Typography>
+                    </ListItem>
+                </List>
+            </Paper>}
 
-            {statusMessage == null && !isLoading && 
+            {!isLoading && statusMessage == null && records.length === 0 &&
+            <Paper variant="outlined" sx={globalStyles.component.mainPaper.withMargin}>
+                <List sx={globalStyles.component.list.listParent}>
+                    <ListItem sx={globalStyles.component.list.listItem.flexRowCenter}>
+                        <Typography variant="h6">{globalMessages.listExceptions.noProblemRecord}</Typography>
+                    </ListItem>
+                </List>
+            </Paper>}
+
+            {statusMessage == null && !isLoading && records.length !== 0 &&
             <TableContainer component={Paper} variant="outlined" sx={globalStyles.component.mainPaper.withMargin}>
                 <Table size="small">
                     <TableHead>
@@ -226,9 +246,9 @@ function MyRecordComponent(
                             <TableRow>
                                 <TableCell>{record.problemEntry.frontendID}</TableCell>
                                 <TableCell align='left'>
-                                    <Button onClick={() => { navigate(`/problemsolve/${record.problemEntry.titleSlug}`); }}>
-                                        <Typography variant="body1" sx={{color:'primary'}}>{record.problemEntry.title}</Typography>
-                                    </Button>
+                                    <Link color='text.primary' variant="body2" underline="hover" href={`/problemsolve/${record.problemEntry.titleSlug}`}>
+                                        {record.problemEntry.title}
+                                    </Link>
                                 </TableCell>
                                 <TableCell align='center'>
                                     <Typography variant='body1' sx={getDiffStyle(record.problemEntry.difficulty)}>
@@ -244,13 +264,14 @@ function MyRecordComponent(
                 </Table>
             </TableContainer>}
 
+            {statusMessage == null && !isLoading && records.length !== 0 &&
             <Paper variant="outlined" sx={globalStyles.component.mainPaper.withMargin}>
                 <List sx={globalStyles.component.list.listParent}>
                     <ListItem sx={globalStyles.component.list.listItem.flexRowCenter}>
                         <Pagination count={totalPage} page={currentPage} onChange={onPageChange} />
                     </ListItem>
                 </List>
-            </Paper>
+            </Paper>}
 
         </Container>
     );

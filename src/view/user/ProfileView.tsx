@@ -1,7 +1,7 @@
 import { Container } from "@mui/system";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import MyProfileHome from "../../components/User/MyProfileHome";
+import MyProfileHome from "../../components/User/UserProfileHome";
 import { globalStyles } from "../../context/ConfigProvider";
 import TopBar from "../../components/Bar/TopBar";
 import FooterComponent from "../../components/Bar/FooterComponent";

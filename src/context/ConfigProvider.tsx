@@ -11,16 +11,25 @@ export const globalDimensions = {
 
 export const globalColors = {
     diff : {
+
+        all:{
+            normal:'#696969',
+            background:'#d8d8d8',
+        },
+
         easy:{
             normal:'#3ac81d',
+            background:'#abef9d',
         },
 
         medium:{
             normal:'#d2900c',
+            background:'#f5d596',
         },
 
         hard:{
-            normal:'#d2230c'
+            normal:'#d2230c',
+            background:'#f5b1a8',
         },
     },
 }
@@ -28,15 +37,25 @@ export const globalColors = {
 
 export const globalMessages = {
 
-    serverErrorMessage : "服务器出问题了, 但 poor shawn 也不知道为什么",
+    serverErrorMessage : "服务器出问题了, 但 teacher miao miao 也不知道为什么",
 
     loginRequiredMessage : "Please log in",
 
-    invalidProblemMessage : "没有找到这道题!",
+    invalidProblemMessage : "Invalid problem input!",
+
+    noQualifiedProblem : "No qualified problem found!",
 
     forbiddenMessage : "You are forbidden!",
 
-    needRefreshMessage : "服务器出问题了, 可能刷新一下能解决?"
+    needRefreshMessage : "服务器出问题了, 可能刷新一下能解决?",
+
+    usernameNotFoundMessage : "404 not found!",
+
+    listExceptions: {
+        noProblemRecord:"No problem record yet!",
+        noTopicRecord:"No topic record yet!",
+        noProblemSolveRecord:"No solve record for this problem yet!",
+    },
 
 };
 
@@ -94,29 +113,58 @@ export const globalStyles = {
 
     component : {
 
-        mainContainer : {
-            parentWithGap : {
-                display:'flex',
-                flexDirection:'column',
-                mt:'30px',
-                alignItems:'center',
-                justifyContent:'center',
-            },
-    
-            parentWithoutGap : {
-                display:'flex',
-                flexDirection:'column',
-                alignItems:'center',
-                justifyContent:'center',
+        mainContainer:{
+            flexColumnAlignCenter:{
+                withGap:{
+                    display:'flex',
+                    flexDirection:'column',
+                    mt:'30px',
+                    alignItems:'center',
+                    justifyContent:'center',
+                },
+        
+                withoutGap:{
+                    display:'flex',
+                    flexDirection:'column',
+                    alignItems:'center',
+                    justifyContent:'center',
+                },
             },
 
-            withMargin : {
-                display:'flex',
-                flexDirection:'column',
-                m:'10px',
-                alignItems:'center',
-                justifyContent:'center',
-            }
+            flexRowAlignFlexStart:{
+                withGap:{
+                    display:'flex',
+                    flexDirection:'row',
+                    mt:'30px',
+                    alignItems:'flex-start',
+                    justifyContent:'center',
+                },
+        
+                withoutGap:{
+                    display:'flex',
+                    flexDirection:'row',
+                    alignItems:'flex-start',
+                    justifyContent:'center',
+                },
+            },
+
+        },
+
+        subContainer:{
+            flexColumnAlignCenter:{
+                withMargin : {
+                    display:'flex',
+                    flexDirection:'column',
+                    m:'15px',
+                    alignItems:'center',
+                    justifyContent:'center',
+                },
+            }, 
+
+            flexRowAlignFlexStart:{
+
+            },
+
         },
     
         mainPaper: {

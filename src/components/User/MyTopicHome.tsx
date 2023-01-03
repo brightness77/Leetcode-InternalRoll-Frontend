@@ -1,7 +1,7 @@
-import { Button, Divider, FormControl, FormHelperText, InputLabel, LinearProgress, List, ListItem, MenuItem, OutlinedInput, Pagination, Paper, Select, Skeleton, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
+import { Button, Divider, FormControl, FormHelperText, InputLabel, LinearProgress, Link, List, ListItem, MenuItem, OutlinedInput, Pagination, Paper, Select, Skeleton, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import { ReactElement, useCallback, useContext, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { globalMessages, globalStyles } from "../../context/ConfigProvider";
 import RunContext from "../../context/RunContextProvider";
 import LeetcodeRequest from "../../utils/LeetcodeRequest";
@@ -74,6 +74,8 @@ function MyTopicHome() : ReactElement {
         try {
             const parsedResponse = JSON.parse(response);
 
+            //console.log(parsedResponse);
+
             setRecords(parsedResponse.content);
             setTotalPage(parsedResponse.totalPages);
 
@@ -82,6 +84,13 @@ function MyTopicHome() : ReactElement {
         }
 
         setIsLoading(false);
+
+        // if(records.length == 0){
+        //     setStatusMessage(globalMessages.listExceptions.noTopicRecord);
+        // } else {
+        //     setStatusMessage(null);
+        // }
+
         setStatusMessage(null);
 
     }, [records]);
@@ -105,7 +114,6 @@ function MyTopicHome() : ReactElement {
         setCurrentPage(value);
     }, [currentPage, totalPage, records]);
 
-    
     useEffect(() => {
         const callURL = `topictag/record?page=${currentPage - 1}&size=${pageSize}`;
 
@@ -121,9 +129,8 @@ function MyTopicHome() : ReactElement {
 
 
 
-
     return (
-        <Container sx={globalStyles.component.mainContainer.parentWithGap}>
+        <Container sx={globalStyles.component.mainContainer.flexColumnAlignCenter.withGap}>
 
             <Paper variant="outlined" sx={globalStyles.component.mainPaper.withMargin}>
                 <List sx={globalStyles.component.list.listParent}>
@@ -135,14 +142,34 @@ function MyTopicHome() : ReactElement {
                 </List>
             </Paper>
 
-            {isLoading && <>
-                <LinearProgress sx={{width:'70%', m:'20px',}} />
-                {[...Array(pageSize)].map((v, i) => (<Skeleton animation="wave" sx={{width:'70%', height:'40px', m:'10px',}} />))}
-            </> }
+            {isLoading && <Paper variant="outlined" sx={globalStyles.component.mainPaper.withMargin}>
+                <List sx={globalStyles.component.list.listParent}>
+                    {[...Array(pageSize)].map((v, i) => (
+                    <ListItem sx={globalStyles.component.list.listItem.flexRowCenter}>
+                        <Skeleton animation="wave" sx={{width:'70%', height:'40px', }} />
+                    </ListItem>))}
+                </List>
+            </Paper> }
 
-            {statusMessage != null && <Typography>{statusMessage}</Typography>}
+            {statusMessage != null && 
+            <Paper variant="outlined" sx={globalStyles.component.mainPaper.withMargin}>
+                <List sx={globalStyles.component.list.listParent}>
+                    <ListItem sx={globalStyles.component.list.listItem.flexRowCenter}>
+                        <Typography variant="h6">{statusMessage}</Typography>
+                    </ListItem>
+                </List>
+            </Paper>}
 
-            {statusMessage == null && !isLoading && 
+            {!isLoading && statusMessage == null && records.length === 0 &&
+            <Paper variant="outlined" sx={globalStyles.component.mainPaper.withMargin}>
+                <List sx={globalStyles.component.list.listParent}>
+                    <ListItem sx={globalStyles.component.list.listItem.flexRowCenter}>
+                        <Typography variant="h6">{globalMessages.listExceptions.noTopicRecord}</Typography>
+                    </ListItem>
+                </List>
+            </Paper>}
+
+            {statusMessage == null && !isLoading && records.length !== 0 &&
             <TableContainer component={Paper} variant="outlined" sx={globalStyles.component.mainPaper.withMargin}>
                 <Table size="small">
                     <TableHead>
@@ -157,11 +184,9 @@ function MyTopicHome() : ReactElement {
                         {records.map((record:any) => (
                             <TableRow>
                                 <TableCell align='left'>
-                                    <Button onClick={() => {
-                                        navigate(`/my/record/${record.topicTag.name}`);
-                                        }}>
-                                        <TableCell>{record.topicTag.name}</TableCell>
-                                    </Button>
+                                    <Link color='text.primary' variant="body2" underline="hover" href={`/my/record/${record.topicTag.name}`}>
+                                        {record.topicTag.name}
+                                    </Link>
                                 </TableCell>
                                 <TableCell align='center'>{record.totalProblems}</TableCell>
                                 <TableCell align='center'>{record.totalAC}</TableCell>
@@ -172,13 +197,14 @@ function MyTopicHome() : ReactElement {
                 </Table>
             </TableContainer>}
 
+            {statusMessage == null && !isLoading && records.length !== 0 &&
             <Paper variant="outlined" id="List Bottom" sx={globalStyles.component.mainPaper.withMargin}>
                 <List sx={globalStyles.component.list.listParent}>
                     <ListItem sx={globalStyles.component.list.listItem.flexRowCenter}>
                         <Pagination count={totalPage} page={currentPage} onChange={onPageChange} />
                     </ListItem>
                 </List>
-            </Paper>
+            </Paper>}
 
         </Container>
     );

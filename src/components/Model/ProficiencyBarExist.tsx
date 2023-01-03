@@ -8,7 +8,7 @@ import Looks4Icon from '@mui/icons-material/Looks4';
 import Looks5Icon from '@mui/icons-material/Looks5';
 
 
-const styles = {
+export const styles = {
 
     listItemRightStyle : {
         flexGrow : 1,
@@ -18,6 +18,11 @@ const styles = {
     proficiencyButtonStyle : {
         width:'30px',
         height:'30px',
+    },
+
+    proficiencyButtonLargeStyle : {
+        width:'45px',
+        height:'45px',
     },
 
 };

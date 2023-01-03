@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { globalStyles } from "../context/ConfigProvider";
 import TopBar from "../components/Bar/TopBar";
 import { useState } from "react";
-import ProblemRecord from "../components/ProblemSolve/ProblemRecord";
+import ProblemRecord from "../components/ProblemSolve/ProblemRecordHome";
 import FooterComponent from "../components/Bar/FooterComponent";
 
 

@@ -1,49 +1,70 @@
 import { useCallback, useState } from "react";
 import LeetcodeRequest from "../utils/LeetcodeRequest";
 import juan from "../static/img/three_1.jpg";
-import {Typography, Container, Box, Button, TextField} from "@mui/material";
+import {Typography, Container, Box, Button, TextField, Paper, Skeleton} from "@mui/material";
+import { globalStyles } from "../context/ConfigProvider";
 
 
 const styles = {
-    buttonStyle : {
-        color : '#101010',
-        'font-size' : 25,
-        'margin-left' : 50,
+
+    formBox:{
+        p:'20px',
+        display:'flex',
+        flexDirection:'column',
+        alignItems:'center',
     },
 
-    inputBoxStyle : {
+    buttonStyle:{
+        width:'50%',
+        height:'50px',
+        mt:'20px',
+    },
+
+    inputBoxStyle:{
         'font-size' : 25,
         'size' : 30,
     }, 
 
-    imageStyle : {
-        width: '500px',
-        height : '500px',
-        mb:'20px',
-    }
+    imageStyle:{
+        width: '100%',
+    },
+
+    skeletonStyle:{
+        width:'90%',
+        height:'30px',
+    },
 }
 
 
 function CheckUser(): React.ReactElement {
 
     const [usernameInput, setUsernameInput] = useState('');
-    const [juanContent, setContent] = useState('目前还没有人卷');
+    const [juanContent, setContent] = useState('查查憨憨们都刷了多少题');
+
+    const [isLoading, setIsLoading] = useState(false);
+
 
     const onUsernameChange = useCallback((e: any) => {
         //console.log(e.target.value);
         setUsernameInput(e.target.value);
     }, []);
 
+    const onRequestStart = useCallback(() => {
+        setIsLoading(true);
+    }, []);
+
     const onRequestSuccess = useCallback((response : any) => {
         //console.log(response);
         const parsedResponse = JSON.parse(response);
         console.log(usernameInput);
-        if(Object.keys(parsedResponse.submissionList).length == 0){
+        if(Object.keys(parsedResponse.submissionList).length === 0){
             //not brushed today
             setContent(`${usernameInput} 同学, 没刷题你还来看?`);
         } else {
             let today = parsedResponse.submissionList[0].count;
-            if(today < 10){
+            if(today === 0){
+                setContent(`${usernameInput} 同学, 没刷题你还来看?`);
+            } else if (today < 10){
                 let left = 10 - today;
                 setContent(`${usernameInput} 同学,今天已经刷了${today}题, 还差${left}题就可以下班啦!`);
             } else {
@@ -52,47 +73,54 @@ function CheckUser(): React.ReactElement {
         }
         //console.log(juanContent);
 
+        setIsLoading(false);
     }, [usernameInput]);
 
     const onRequestFail = useCallback(() => {
         setContent('怎么肥四, 今天还没有人开卷?');
+        setIsLoading(false);
     }, []);
 
     const onJuan = useCallback(() => {
         //console.log("username is " + usernameInput);
         new LeetcodeRequest(`stats/userToday?username=${usernameInput}`, 'GET')
+            .onStart(onRequestStart)
             .onSuccess(onRequestSuccess)
             .onFailure(onRequestFail)
             .onError(onRequestFail)
             .send();
-    }, [onRequestSuccess, onRequestFail, usernameInput]);
+    }, [onRequestStart, onRequestSuccess, onRequestFail, usernameInput]);
 
 
     return (
-        <Container component = "main" sx = {{display:'flex', flexDirection:'column', alignItems:'center'}}>
-            <Box component="form" sx = {{width: 800, display:'flex', flexDirection:'column', alignItems:'center'}}>
-                
+        <Container component="main" disableGutters maxWidth="xs" sx={globalStyles.component.mainContainer.flexColumnAlignCenter.withGap}>
+            <Paper variant="outlined" sx={globalStyles.component.mainPaper.withMargin}>
+
                 <Box component="img" sx={styles.imageStyle} src={juan} alt="ROLL!" />
 
-                <Typography variant="body1">查查憨憨们都刷了多少题</Typography>
+                <Box component="form" sx = {styles.formBox}>
 
-                <TextField
-                    margin="normal"
-                    required
-                    
-                    id="account"
-                    label="Account Name" 
-                    autoComplete="leap-code"
-                    onChange={onUsernameChange}
-                    sx = {{width: 400}}
-                />
-                <Button variant = "contained" color = "primary" onClick = {onJuan} sx = {{width: 400, mt: 2}}>
-                    卷起来
-                </Button>
-                <Typography variant="body1" sx={{mt : 5}}>
-                    {juanContent}
-                </Typography>
-            </Box>
+                    {isLoading && <Skeleton animation="wave" sx={styles.skeletonStyle} />}
+
+                    {!isLoading && <Typography variant="body1">
+                        {juanContent}
+                    </Typography>}
+
+                    <TextField
+                        margin="normal"
+                        required
+                        label="Leetcode Account Name" 
+                        autoComplete="leap-code"
+                        onChange={onUsernameChange}
+                        fullWidth
+                    />
+
+                    <Button variant = "contained" color = "primary" onClick = {onJuan} sx = {styles.buttonStyle}>
+                        <Typography variant='h6'>卷起来</Typography>
+                    </Button>
+
+                </Box>
+            </Paper>
         </Container>
     );
 }
